@@ -10,8 +10,7 @@ import {
   TableRow,
   Typography,
   CircularProgress,
-  Chip,
-  Stack
+  Chip
 } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import { ResultMetadata } from '../../../model';
@@ -144,15 +143,24 @@ const HistoryTab: React.FC<HistoryTabProps> = () => {
               <TableCell>
                 <strong>Version</strong>
               </TableCell>
-              <TableCell>
-                <strong>Result Overview</strong>
+              <TableCell sx={{ padding: '8px 6px' }}>
+                <strong>Success Ratio</strong>
+              </TableCell>
+              <TableCell sx={{ padding: '8px 6px' }}>
+                <strong>P50 Latency</strong>
+              </TableCell>
+              <TableCell sx={{ padding: '8px 6px' }}>
+                <strong>P95 Latency</strong>
+              </TableCell>
+              <TableCell sx={{ padding: '8px 6px' }}>
+                <strong>Throughput</strong>
               </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {results.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} align="center">
+                <TableCell colSpan={7} align="center">
                   <Typography variant="body2" color="text.secondary">
                     No benchmark results found for this session.
                   </Typography>
@@ -164,29 +172,35 @@ const HistoryTab: React.FC<HistoryTabProps> = () => {
                   <TableCell>{result.id}</TableCell>
                   <TableCell>{new Date(result.timestamp).toLocaleString()}</TableCell>
                   <TableCell>{result.version}</TableCell>
-                  <TableCell>
-                    <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-                      <Chip
-                        label={`Success: ${result.successRatio >= 0 ? result.successRatio.toFixed(1) : 'N/A'}%`}
-                        size="small"
-                        color={getSuccessRatioColor(result.successRatio)}
-                      />
-                      <Chip
-                        label={`P50: ${result.p50Latency >= 0 ? result.p50Latency.toFixed(0) : 'N/A'}ms`}
-                        size="small"
-                        color={getP50LatencyColor(result.p50Latency)}
-                      />
-                      <Chip
-                        label={`P95: ${result.p95Latency >= 0 ? result.p95Latency.toFixed(0) : 'N/A'}ms`}
-                        size="small"
-                        color={getP95LatencyColor(result.p95Latency)}
-                      />
-                      <Chip
-                        label={`Throughput: ${result.throughput >= 0 ? result.throughput.toFixed(1) : 'N/A'}/s`}
-                        size="small"
-                        color="default"
-                      />
-                    </Stack>
+                  <TableCell sx={{ padding: '8px 6px' }}>
+                    <Chip
+                      label={
+                        result.successRatio >= 0 ? `${result.successRatio.toFixed(1)}%` : 'N/A'
+                      }
+                      size="small"
+                      color={getSuccessRatioColor(result.successRatio)}
+                    />
+                  </TableCell>
+                  <TableCell sx={{ padding: '8px 6px' }}>
+                    <Chip
+                      label={result.p50Latency >= 0 ? `${result.p50Latency.toFixed(0)}ms` : 'N/A'}
+                      size="small"
+                      color={getP50LatencyColor(result.p50Latency)}
+                    />
+                  </TableCell>
+                  <TableCell sx={{ padding: '8px 6px' }}>
+                    <Chip
+                      label={result.p95Latency >= 0 ? `${result.p95Latency.toFixed(0)}ms` : 'N/A'}
+                      size="small"
+                      color={getP95LatencyColor(result.p95Latency)}
+                    />
+                  </TableCell>
+                  <TableCell sx={{ padding: '8px 6px' }}>
+                    <Chip
+                      label={result.throughput >= 0 ? `${result.throughput.toFixed(1)}/s` : 'N/A'}
+                      size="small"
+                      color="default"
+                    />
                   </TableCell>
                 </TableRow>
               ))
