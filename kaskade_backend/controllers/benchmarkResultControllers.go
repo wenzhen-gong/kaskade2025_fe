@@ -20,6 +20,61 @@ type addBenchmarkResultRequest struct {
 	Result    map[string]interface{} `json:"result" binding:"required"`
 }
 
+// extractSummaryMetrics extracts metrics from result and config JSON
+func extractSummaryMetrics(resultJSON datatypes.JSON, configJSON datatypes.JSON) (successRatio, p50Latency, p95Latency, throughput float64) {
+	var result map[string]interface{}
+	var config map[string]interface{}
+
+	if err := json.Unmarshal(resultJSON, &result); err != nil {
+		return 0, 0, 0, 0
+	}
+	if err := json.Unmarshal(configJSON, &config); err != nil {
+		return 0, 0, 0, 0
+	}
+
+	successRatio = -1
+	p50Latency = -1
+	p95Latency = -1
+	throughput = -1
+
+	// Calculate success ratio
+	success, _ := result["success"].(float64)
+	failures, _ := result["failures"].(float64)
+	total := success + failures
+	if total > 0 {
+		successRatio = (success / total) * 100.0
+	}
+
+	// Extract percentile latencies
+	if percentileTimeMs, ok := result["percentileTimeMs"].(map[string]interface{}); ok {
+		// P50 latency
+		if p50Val, ok := percentileTimeMs["50"]; ok {
+			switch v := p50Val.(type) {
+			case float64:
+				p50Latency = v
+			case int:
+				p50Latency = float64(v)
+			}
+		}
+		// P95 latency
+		if p95Val, ok := percentileTimeMs["95"]; ok {
+			switch v := p95Val.(type) {
+			case float64:
+				p95Latency = v
+			case int:
+				p95Latency = float64(v)
+			}
+		}
+	}
+
+	// Calculate throughput (requests per second)
+	if testDuration, ok := config["testDuration"].(float64); ok && testDuration > 0 {
+		throughput = total / testDuration
+	}
+
+	return successRatio, p50Latency, p95Latency, throughput
+}
+
 func AddBenchmarkResult(c *gin.Context, db *gorm.DB) {
 	var req addBenchmarkResultRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -39,11 +94,20 @@ func AddBenchmarkResult(c *gin.Context, db *gorm.DB) {
 		return
 	}
 
+	// Calculate metrics before saving
+	resultJSON := datatypes.JSON(resultBytes)
+	configJSON := datatypes.JSON(configBytes)
+	successRatio, p50Latency, p95Latency, throughput := extractSummaryMetrics(resultJSON, configJSON)
+
 	record := models.BenchmarkResult{
-		SessionID: req.SessionID,
-		Version:   req.Version,
-		Config:    datatypes.JSON(configBytes),
-		Result:    datatypes.JSON(resultBytes),
+		SessionID:    req.SessionID,
+		Version:      req.Version,
+		Config:       configJSON,
+		Result:       resultJSON,
+		SuccessRatio: successRatio,
+		P50Latency:   p50Latency,
+		P95Latency:   p95Latency,
+		Throughput:   throughput,
 	}
 
 	if err := db.Create(&record).Error; err != nil {
@@ -52,10 +116,14 @@ func AddBenchmarkResult(c *gin.Context, db *gorm.DB) {
 	}
 
 	summary := models.BenchmarkResultSummary{
-		ID:        record.ID,
-		Timestamp: record.Timestamp,
-		SessionID: record.SessionID,
-		Version:   record.Version,
+		ID:           record.ID,
+		Timestamp:    record.Timestamp,
+		SessionID:    record.SessionID,
+		Version:      record.Version,
+		SuccessRatio: record.SuccessRatio,
+		P50Latency:   record.P50Latency,
+		P95Latency:   record.P95Latency,
+		Throughput:   record.Throughput,
 	}
 	c.JSON(http.StatusCreated, summary)
 }
@@ -124,10 +192,14 @@ func GetBenchmarkResults(c *gin.Context, db *gorm.DB) {
 	summaries := make([]models.BenchmarkResultSummary, len(results))
 	for i, result := range results {
 		summaries[i] = models.BenchmarkResultSummary{
-			ID:        result.ID,
-			Timestamp: result.Timestamp,
-			SessionID: result.SessionID,
-			Version:   result.Version,
+			ID:           result.ID,
+			Timestamp:    result.Timestamp,
+			SessionID:    result.SessionID,
+			Version:      result.Version,
+			SuccessRatio: result.SuccessRatio,
+			P50Latency:   result.P50Latency,
+			P95Latency:   result.P95Latency,
+			Throughput:   result.Throughput,
 		}
 	}
 

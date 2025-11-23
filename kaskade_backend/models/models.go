@@ -46,18 +46,26 @@ type RequestHistory struct {
 	User User `gorm:"constraint:OnDelete:CASCADE" json:"-"`
 }
 type BenchmarkResult struct {
-	ID        uint           `gorm:"primaryKey" json:"id"`
-	Timestamp time.Time      `gorm:"autoCreateTime" json:"timestamp"`
-	SessionID string         `gorm:"type:varchar(100)" json:"session_id"`
-	Version   string         `gorm:"type:varchar(50)" json:"version"`
-	Config    datatypes.JSON `json:"config"`
-	Result    datatypes.JSON `json:"result"`
+	ID           uint           `gorm:"primaryKey" json:"id"`
+	Timestamp    time.Time      `gorm:"autoCreateTime" json:"timestamp"`
+	SessionID    string         `gorm:"type:varchar(100)" json:"session_id"`
+	Version      string         `gorm:"type:varchar(50)" json:"version"`
+	Config       datatypes.JSON `json:"config"`
+	Result       datatypes.JSON `json:"result"`
+	SuccessRatio float64        `gorm:"type:double precision" json:"success_ratio"`
+	P50Latency   float64        `gorm:"type:double precision" json:"p50_latency"`
+	P95Latency   float64        `gorm:"type:double precision" json:"p95_latency"`
+	Throughput   float64        `gorm:"type:double precision" json:"throughput"`
 }
 
 // BenchmarkResultSummary is used for API responses that only need summary information
 type BenchmarkResultSummary struct {
-	ID        uint      `json:"id"`
-	Timestamp time.Time `json:"timestamp"`
-	SessionID string    `json:"sessionId"`
-	Version   string    `json:"version"`
+	ID           uint      `json:"id"`
+	Timestamp    time.Time `json:"timestamp"`
+	SessionID    string    `json:"sessionId"`
+	Version      string    `json:"version"`
+	SuccessRatio float64   `json:"successRatio"`
+	P50Latency   float64   `json:"p50Latency"`
+	P95Latency   float64   `json:"p95Latency"`
+	Throughput   float64   `json:"throughput"`
 }

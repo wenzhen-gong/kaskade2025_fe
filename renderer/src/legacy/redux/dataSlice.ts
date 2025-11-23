@@ -66,7 +66,11 @@ export const runTest = createAsyncThunk('datafile/runTest', async (sessionId: st
     id: saveResultResponse.id,
     timestamp: saveResultResponse.timestamp,
     sessionId: saveResultResponse.sessionId,
-    version: saveResultResponse.version
+    version: saveResultResponse.version,
+    successRatio: saveResultResponse.successRatio,
+    p50Latency: saveResultResponse.p50Latency,
+    p95Latency: saveResultResponse.p95Latency,
+    throughput: saveResultResponse.throughput
   };
 
   return { result, resultMetadata };

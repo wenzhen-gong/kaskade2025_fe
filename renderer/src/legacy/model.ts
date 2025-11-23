@@ -12,6 +12,10 @@ export interface ResultMetadata {
   timestamp: string;
   sessionId: string;
   version: string;
+  successRatio: number;
+  p50Latency: number;
+  p95Latency: number;
+  throughput: number;
 }
 
 // TODO(jingjing): Clean up later.
