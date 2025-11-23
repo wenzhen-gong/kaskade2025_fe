@@ -259,6 +259,10 @@ const dataSlice = createSlice({
     setResult: (state, action) => {
       state.result = action.payload.result;
       state.resultMetadata = action.payload.resultMetadata;
+    },
+    clearResult: (state) => {
+      state.result = undefined;
+      state.resultMetadata = undefined;
     }
   },
   // Reducers for asyncthunk
@@ -297,7 +301,8 @@ export const {
   setSigninFormData,
   setUser,
   setOpenProfile,
-  setResult
+  setResult,
+  clearResult
 } = dataSlice.actions;
 
 export default dataSlice.reducer;

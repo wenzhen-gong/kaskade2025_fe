@@ -1,4 +1,4 @@
-import React, { useState, useEffect, JSX } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useParams, useNavigate } from 'react-router-dom';
 import OverviewTab from './tabs/OverviewTab';
@@ -9,9 +9,10 @@ import HistoryTab from './tabs/HistoryTab';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import Typography from '@mui/material/Typography';
 import { RootState } from '../../redux/store';
+import { clearResult } from '../../redux/dataSlice';
 
 // https://mui.com/material-ui/react-tabs/
 // Some helper functions to render tab bar & tab pannels.
@@ -66,6 +67,7 @@ const SessionsDiv = styled.div`
 `;
 
 const Sessions: React.FC = () => {
+  const dispatch = useDispatch();
   const configFile = useSelector((state: RootState) => state.configFile);
   console.log('Current configFile on SessionTab:', configFile);
   // Get the session Id from URL parameters.
@@ -93,6 +95,12 @@ const Sessions: React.FC = () => {
 
   // Get result from state to detect when test completes
   const result = useSelector((state: RootState) => state.result);
+
+  // Clear result and resultMetadata when session changes, and switch to Overview tab
+  useEffect(() => {
+    dispatch(clearResult());
+    setCurrentTab(0); // Switch to Overview tab
+  }, [sessionId, dispatch]);
 
   // Auto-switch to Result tab when test completes
   useEffect(() => {
