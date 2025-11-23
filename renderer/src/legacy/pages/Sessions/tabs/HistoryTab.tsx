@@ -9,7 +9,9 @@ import {
   TableHead,
   TableRow,
   Typography,
-  CircularProgress
+  CircularProgress,
+  Chip,
+  Stack
 } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import { ResultMetadata } from '../../../model';
@@ -17,6 +19,56 @@ import { ResultMetadata } from '../../../model';
 interface HistoryTabProps {
   // Add props if needed
 }
+
+// Color thresholds for metrics
+const SUCCESS_RATIO_THRESHOLDS = {
+  EXCELLENT: 98, // >= 98%: green
+  GOOD: 95, // >= 95%: blue
+  WARNING: 80 // >= 80%: yellow, < 80%: red
+};
+
+const P50_LATENCY_THRESHOLDS = {
+  EXCELLENT: 100, // <= 100ms: green
+  GOOD: 200, // <= 200ms: blue
+  WARNING: 500 // <= 500ms: yellow, > 500ms: red
+};
+
+const P95_LATENCY_THRESHOLDS = {
+  EXCELLENT: 500, // <= 500ms: green
+  GOOD: 1000, // <= 1000ms: blue
+  WARNING: 2000 // <= 2000ms: yellow, > 2000ms: red
+};
+
+// Helper functions to get chip color based on value
+const getSuccessRatioColor = (
+  value: number
+): 'success' | 'primary' | 'warning' | 'error' | 'default' => {
+  if (value < 0) return 'default';
+  if (value >= SUCCESS_RATIO_THRESHOLDS.EXCELLENT) return 'success';
+  if (value >= SUCCESS_RATIO_THRESHOLDS.GOOD) return 'primary';
+  if (value >= SUCCESS_RATIO_THRESHOLDS.WARNING) return 'warning';
+  return 'error';
+};
+
+const getP50LatencyColor = (
+  value: number
+): 'success' | 'primary' | 'warning' | 'error' | 'default' => {
+  if (value < 0) return 'default';
+  if (value <= P50_LATENCY_THRESHOLDS.EXCELLENT) return 'success';
+  if (value <= P50_LATENCY_THRESHOLDS.GOOD) return 'primary';
+  if (value <= P50_LATENCY_THRESHOLDS.WARNING) return 'warning';
+  return 'error';
+};
+
+const getP95LatencyColor = (
+  value: number
+): 'success' | 'primary' | 'warning' | 'error' | 'default' => {
+  if (value < 0) return 'default';
+  if (value <= P95_LATENCY_THRESHOLDS.EXCELLENT) return 'success';
+  if (value <= P95_LATENCY_THRESHOLDS.GOOD) return 'primary';
+  if (value <= P95_LATENCY_THRESHOLDS.WARNING) return 'warning';
+  return 'error';
+};
 
 const HistoryTab: React.FC<HistoryTabProps> = () => {
   const params = useParams();
@@ -92,12 +144,15 @@ const HistoryTab: React.FC<HistoryTabProps> = () => {
               <TableCell>
                 <strong>Version</strong>
               </TableCell>
+              <TableCell>
+                <strong>Result Overview</strong>
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {results.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={3} align="center">
+                <TableCell colSpan={4} align="center">
                   <Typography variant="body2" color="text.secondary">
                     No benchmark results found for this session.
                   </Typography>
@@ -109,6 +164,30 @@ const HistoryTab: React.FC<HistoryTabProps> = () => {
                   <TableCell>{result.id}</TableCell>
                   <TableCell>{new Date(result.timestamp).toLocaleString()}</TableCell>
                   <TableCell>{result.version}</TableCell>
+                  <TableCell>
+                    <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                      <Chip
+                        label={`Success: ${result.successRatio >= 0 ? result.successRatio.toFixed(1) : 'N/A'}%`}
+                        size="small"
+                        color={getSuccessRatioColor(result.successRatio)}
+                      />
+                      <Chip
+                        label={`P50: ${result.p50Latency >= 0 ? result.p50Latency.toFixed(0) : 'N/A'}ms`}
+                        size="small"
+                        color={getP50LatencyColor(result.p50Latency)}
+                      />
+                      <Chip
+                        label={`P95: ${result.p95Latency >= 0 ? result.p95Latency.toFixed(0) : 'N/A'}ms`}
+                        size="small"
+                        color={getP95LatencyColor(result.p95Latency)}
+                      />
+                      <Chip
+                        label={`Throughput: ${result.throughput >= 0 ? result.throughput.toFixed(1) : 'N/A'}/s`}
+                        size="small"
+                        color="default"
+                      />
+                    </Stack>
+                  </TableCell>
                 </TableRow>
               ))
             )}
