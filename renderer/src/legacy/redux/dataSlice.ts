@@ -255,6 +255,10 @@ const dataSlice = createSlice({
     },
     setOpenProfile: (state, action) => {
       state.openProfile = action.payload;
+    },
+    setResult: (state, action) => {
+      state.result = action.payload.result;
+      state.resultMetadata = action.payload.resultMetadata;
     }
   },
   // Reducers for asyncthunk
@@ -292,7 +296,8 @@ export const {
   setSigninLoading,
   setSigninFormData,
   setUser,
-  setOpenProfile
+  setOpenProfile,
+  setResult
 } = dataSlice.actions;
 
 export default dataSlice.reducer;

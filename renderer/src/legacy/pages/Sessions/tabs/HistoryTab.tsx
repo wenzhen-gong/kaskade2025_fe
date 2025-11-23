@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import {
   Box,
   Table,
@@ -13,10 +14,11 @@ import {
   Chip
 } from '@mui/material';
 import Paper from '@mui/material/Paper';
-import { ResultMetadata } from '../../../model';
+import { ResultMetadata, Result } from '../../../model';
+import { setResult } from '../../../redux/dataSlice';
 
 interface HistoryTabProps {
-  // Add props if needed
+  setCurrentTab?: (tab: number) => void;
 }
 
 // Color thresholds for metrics
@@ -69,9 +71,10 @@ const getP95LatencyColor = (
   return 'error';
 };
 
-const HistoryTab: React.FC<HistoryTabProps> = () => {
+const HistoryTab: React.FC<HistoryTabProps> = ({ setCurrentTab }) => {
   const params = useParams();
   const sessionId = params.id;
+  const dispatch = useDispatch();
   const [results, setResults] = useState<ResultMetadata[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -108,6 +111,42 @@ const HistoryTab: React.FC<HistoryTabProps> = () => {
   useEffect(() => {
     fetchHistory();
   }, [fetchHistory]);
+
+  const handleRowClick = async (resultId: number): Promise<void> => {
+    try {
+      const response = await fetch(`http://localhost:8080/benchmarkresult/${resultId}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch benchmark result details');
+      }
+
+      const data = await response.json();
+
+      // Parse the JSON fields (result and config are stored as JSON strings)
+      const result: Result =
+        typeof data.result === 'string' ? JSON.parse(data.result) : data.result;
+      const resultMetadata: ResultMetadata = {
+        id: data.id,
+        timestamp: data.timestamp,
+        sessionId: data.session_id,
+        version: data.version,
+        successRatio: data.success_ratio,
+        p50Latency: data.p50_latency,
+        p95Latency: data.p95_latency,
+        throughput: data.throughput
+      };
+
+      // Update Redux state
+      dispatch(setResult({ result, resultMetadata }));
+
+      // Switch to Result tab (index 3)
+      if (setCurrentTab) {
+        setCurrentTab(3);
+      }
+    } catch (err) {
+      console.error('Error fetching benchmark result:', err);
+      setError(err instanceof Error ? err.message : 'Unknown error');
+    }
+  };
 
   if (loading) {
     return (
@@ -168,7 +207,12 @@ const HistoryTab: React.FC<HistoryTabProps> = () => {
               </TableRow>
             ) : (
               results.map((result) => (
-                <TableRow key={result.id} hover>
+                <TableRow
+                  key={result.id}
+                  hover
+                  onClick={() => handleRowClick(result.id)}
+                  sx={{ cursor: 'pointer' }}
+                >
                   <TableCell>{result.id}</TableCell>
                   <TableCell>{new Date(result.timestamp).toLocaleString()}</TableCell>
                   <TableCell>{result.version}</TableCell>

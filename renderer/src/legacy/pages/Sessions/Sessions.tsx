@@ -163,7 +163,7 @@ const Sessions: React.FC = () => {
             <ResultTab />
           </CustomTabPanel>
           <CustomTabPanel value={currentTab} index={4}>
-            <HistoryTab />
+            <HistoryTab setCurrentTab={setCurrentTab} />
           </CustomTabPanel>
         </Box>
       </Box>
