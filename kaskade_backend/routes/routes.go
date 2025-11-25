@@ -36,4 +36,10 @@ func SetupRoutes(r *gin.Engine, db *gorm.DB) {
 	r.POST("/benchmarkresult", func(c *gin.Context) {
 		controllers.AddBenchmarkResult(c, db)
 	})
+	r.GET("/benchmarkresult", func(c *gin.Context) {
+		controllers.GetBenchmarkResults(c, db)
+	})
+	r.GET("/benchmarkresult/:id", func(c *gin.Context) {
+		controllers.GetBenchmarkResultByID(c, db)
+	})
 }

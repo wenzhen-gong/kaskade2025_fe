@@ -93,7 +93,7 @@ const ResultTab: React.FC<ResultTabProps> = () => {
           <Typography variant="body2" sx={{ color: 'text.secondary' }}>
             Result ID:{' '}
             <Typography component="span" variant="subtitle1" sx={{ fontWeight: 600 }}>
-              {resultMetadata.resultId}
+              {resultMetadata.id}
             </Typography>
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }}>

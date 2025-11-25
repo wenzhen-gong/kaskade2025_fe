@@ -27,7 +27,7 @@ const initialState: State = {
   openProfile: false
 };
 
-export const runTest = createAsyncThunk('datafile/runTest', async (_, thunkAPI) => {
+export const runTest = createAsyncThunk('datafile/runTest', async (sessionId: string, thunkAPI) => {
   const state = thunkAPI.getState() as State;
   // console.log('config in runTest Thunk: ', state.runTabConfig);
   // console.log('contentType in runTest Thunk: ', state.contentType);
@@ -52,7 +52,7 @@ export const runTest = createAsyncThunk('datafile/runTest', async (_, thunkAPI) 
 
   // Send a fetch request to backend to save result
   const saveResultRequest = {
-    sessionId: state.datafile[0].sessionId.toString(),
+    sessionId: sessionId,
     version: '1.0.0',
     config: finalRunTabConfig,
     result: result
@@ -63,8 +63,14 @@ export const runTest = createAsyncThunk('datafile/runTest', async (_, thunkAPI) 
   }).then((res) => res.json());
   console.log(`saveResultResponse: ${saveResultResponse}`);
   const resultMetadata: ResultMetadata = {
-    resultId: saveResultResponse.id,
-    timestamp: saveResultResponse.timestamp
+    id: saveResultResponse.id,
+    timestamp: saveResultResponse.timestamp,
+    sessionId: saveResultResponse.sessionId,
+    version: saveResultResponse.version,
+    successRatio: saveResultResponse.successRatio,
+    p50Latency: saveResultResponse.p50Latency,
+    p95Latency: saveResultResponse.p95Latency,
+    throughput: saveResultResponse.throughput
   };
 
   return { result, resultMetadata };
@@ -249,6 +255,16 @@ const dataSlice = createSlice({
     },
     setOpenProfile: (state, action) => {
       state.openProfile = action.payload;
+    },
+    setResult: (state, action) => {
+      state.result = action.payload.result;
+      state.resultMetadata = action.payload.resultMetadata;
+    },
+    clearSessionState: (state) => {
+      state.result = undefined;
+      state.resultMetadata = undefined;
+      state.validUserInput.valid = false;
+      state.validUserInput.flag = !state.validUserInput.flag;
     }
   },
   // Reducers for asyncthunk
@@ -286,7 +302,9 @@ export const {
   setSigninLoading,
   setSigninFormData,
   setUser,
-  setOpenProfile
+  setOpenProfile,
+  setResult,
+  clearSessionState
 } = dataSlice.actions;
 
 export default dataSlice.reducer;

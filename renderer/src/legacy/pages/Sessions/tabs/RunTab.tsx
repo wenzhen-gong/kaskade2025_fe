@@ -33,8 +33,8 @@ interface RunTabProps {
 
 const RunTab: React.FC<RunTabProps> = (props) => {
   const navigate = useNavigate();
-  // const params = useParams();
-  // const sessionId = params.id;
+  const urlParams = useParams();
+  const sessionId = urlParams.id || 'default session';
 
   const runTabConfig = useSelector((state: RootState) => state.runTabConfig);
   const validUserInput = useSelector((state: RootState) => state.validUserInput);
@@ -51,9 +51,9 @@ const RunTab: React.FC<RunTabProps> = (props) => {
   useEffect(() => {
     // console.log('Checking if user input is valid');
     if (validUserInput.valid) {
-      store.dispatch(runTest());
+      store.dispatch(runTest(sessionId));
     }
-  }, [validUserInput.valid, validUserInput.flag]);
+  }, [validUserInput.valid, validUserInput.flag, sessionId]);
 
   // console.log('upon rendering, headers is: ', headers, headers.length);
 

@@ -8,8 +8,14 @@ export interface Result {
 
 // Result plus some metadata
 export interface ResultMetadata {
-  resultId: number;
+  id: number;
   timestamp: string;
+  sessionId: string;
+  version: string;
+  successRatio: number;
+  p50Latency: number;
+  p95Latency: number;
+  throughput: number;
 }
 
 // TODO(jingjing): Clean up later.

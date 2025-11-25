@@ -1,16 +1,18 @@
-import React, { useState, useEffect, JSX } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useParams, useNavigate } from 'react-router-dom';
 import OverviewTab from './tabs/OverviewTab';
 import RunTab from './tabs/RunTab';
 import AuthorizationTab from './tabs/AuthorizationTab';
 import ResultTab from './tabs/ResultTab';
+import HistoryTab from './tabs/HistoryTab';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import Typography from '@mui/material/Typography';
 import { RootState } from '../../redux/store';
+import { clearSessionState } from '../../redux/dataSlice';
 
 // https://mui.com/material-ui/react-tabs/
 // Some helper functions to render tab bar & tab pannels.
@@ -65,6 +67,7 @@ const SessionsDiv = styled.div`
 `;
 
 const Sessions: React.FC = () => {
+  const dispatch = useDispatch();
   const configFile = useSelector((state: RootState) => state.configFile);
   console.log('Current configFile on SessionTab:', configFile);
   // Get the session Id from URL parameters.
@@ -84,7 +87,7 @@ const Sessions: React.FC = () => {
   const navigate = useNavigate();
 
   // Tab bar's state that represents the currently selected tab.
-  // 0 = overview, 1 = authorization, 2 = run, 3 = result.
+  // 0 = overview, 1 = authorization, 2 = run, 3 = result, 4 = history.
   const [currentTab, setCurrentTab] = useState<number>(0); // Overview
   const handleTabChange = (event: React.SyntheticEvent, newValue: number): void => {
     setCurrentTab(newValue);
@@ -92,6 +95,12 @@ const Sessions: React.FC = () => {
 
   // Get result from state to detect when test completes
   const result = useSelector((state: RootState) => state.result);
+
+  // Clear session-related state when session changes, and switch to Overview tab
+  useEffect(() => {
+    dispatch(clearSessionState());
+    setCurrentTab(0); // Switch to Overview tab
+  }, [sessionId, dispatch]);
 
   // Auto-switch to Result tab when test completes
   useEffect(() => {
@@ -145,6 +154,7 @@ const Sessions: React.FC = () => {
             <Tab label="Authorization" {...a11yProps(1)} />
             <Tab label="Run" {...a11yProps(2)} />
             <Tab label="Result" {...a11yProps(3)} />
+            <Tab label="History" {...a11yProps(4)} />
           </Tabs>
         </Box>
         <Box sx={{ flexGrow: 1, overflow: 'hidden' }}>
@@ -159,6 +169,9 @@ const Sessions: React.FC = () => {
           </CustomTabPanel>
           <CustomTabPanel value={currentTab} index={3}>
             <ResultTab />
+          </CustomTabPanel>
+          <CustomTabPanel value={currentTab} index={4}>
+            <HistoryTab setCurrentTab={setCurrentTab} currentTab={currentTab} />
           </CustomTabPanel>
         </Box>
       </Box>
