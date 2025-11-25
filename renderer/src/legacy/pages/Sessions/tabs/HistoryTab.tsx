@@ -19,6 +19,7 @@ import { setResult } from '../../../redux/dataSlice';
 
 interface HistoryTabProps {
   setCurrentTab?: (tab: number) => void;
+  currentTab?: number;
 }
 
 // Color thresholds for metrics
@@ -71,7 +72,7 @@ const getP95LatencyColor = (
   return 'error';
 };
 
-const HistoryTab: React.FC<HistoryTabProps> = ({ setCurrentTab }) => {
+const HistoryTab: React.FC<HistoryTabProps> = ({ setCurrentTab, currentTab }) => {
   const params = useParams();
   const sessionId = params.id;
   const dispatch = useDispatch();
@@ -108,9 +109,12 @@ const HistoryTab: React.FC<HistoryTabProps> = ({ setCurrentTab }) => {
     }
   }, [sessionId]);
 
+  // Fetch history when component mounts or when switching to History tab (index 4)
   useEffect(() => {
-    fetchHistory();
-  }, [fetchHistory]);
+    if (currentTab === 4) {
+      fetchHistory();
+    }
+  }, [currentTab, fetchHistory]);
 
   const handleRowClick = async (resultId: number): Promise<void> => {
     try {
