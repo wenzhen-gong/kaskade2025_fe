@@ -260,9 +260,11 @@ const dataSlice = createSlice({
       state.result = action.payload.result;
       state.resultMetadata = action.payload.resultMetadata;
     },
-    clearResult: (state) => {
+    clearSessionState: (state) => {
       state.result = undefined;
       state.resultMetadata = undefined;
+      state.validUserInput.valid = false;
+      state.validUserInput.flag = !state.validUserInput.flag;
     }
   },
   // Reducers for asyncthunk
@@ -302,7 +304,7 @@ export const {
   setUser,
   setOpenProfile,
   setResult,
-  clearResult
+  clearSessionState
 } = dataSlice.actions;
 
 export default dataSlice.reducer;

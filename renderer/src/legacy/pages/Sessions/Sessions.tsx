@@ -12,7 +12,7 @@ import Box from '@mui/material/Box';
 import { useSelector, useDispatch } from 'react-redux';
 import Typography from '@mui/material/Typography';
 import { RootState } from '../../redux/store';
-import { clearResult } from '../../redux/dataSlice';
+import { clearSessionState } from '../../redux/dataSlice';
 
 // https://mui.com/material-ui/react-tabs/
 // Some helper functions to render tab bar & tab pannels.
@@ -96,9 +96,9 @@ const Sessions: React.FC = () => {
   // Get result from state to detect when test completes
   const result = useSelector((state: RootState) => state.result);
 
-  // Clear result and resultMetadata when session changes, and switch to Overview tab
+  // Clear session-related state when session changes, and switch to Overview tab
   useEffect(() => {
-    dispatch(clearResult());
+    dispatch(clearSessionState());
     setCurrentTab(0); // Switch to Overview tab
   }, [sessionId, dispatch]);
 
