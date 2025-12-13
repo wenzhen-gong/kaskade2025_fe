@@ -128,6 +128,7 @@ export interface ValidUserInput {
   error: string | null;
 }
 export interface User {
+  id: number;
   username: string;
   email: string;
 }
