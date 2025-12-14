@@ -9,6 +9,7 @@ export interface Result {
 // Result plus some metadata
 export interface ResultMetadata {
   id: number;
+  userId: string;
   timestamp: string;
   sessionId: string;
   version: string;
@@ -128,7 +129,7 @@ export interface ValidUserInput {
   error: string | null;
 }
 export interface User {
-  id: number;
+  id: string;
   username: string;
   email: string;
 }

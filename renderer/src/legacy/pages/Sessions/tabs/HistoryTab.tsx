@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   Box,
   Table,
@@ -11,11 +11,13 @@ import {
   TableRow,
   Typography,
   CircularProgress,
-  Chip
+  Chip,
+  Alert
 } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import { ResultMetadata, Result } from '../../../model';
 import { setResult } from '../../../redux/dataSlice';
+import { RootState } from '../../../redux/store';
 
 interface HistoryTabProps {
   setCurrentTab?: (tab: number) => void;
@@ -76,6 +78,7 @@ const HistoryTab: React.FC<HistoryTabProps> = ({ setCurrentTab, currentTab }) =>
   const params = useParams();
   const sessionId = params.id;
   const dispatch = useDispatch();
+  const user = useSelector((state: RootState) => state.user);
   const [results, setResults] = useState<ResultMetadata[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -87,13 +90,19 @@ const HistoryTab: React.FC<HistoryTabProps> = ({ setCurrentTab, currentTab }) =>
       return;
     }
 
+    if (!user) {
+      setError('Please log in to view benchmark history');
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
     try {
       const limit = 20; // Show last 20 results
       const response = await fetch(
-        `http://localhost:8080/benchmarkresult?sessionId=${sessionId}&limit=${limit}`
+        `http://localhost:8080/benchmarkresult?userId=${user.id}&sessionId=${sessionId}&limit=${limit}`
       );
 
       if (!response.ok) {
@@ -107,14 +116,20 @@ const HistoryTab: React.FC<HistoryTabProps> = ({ setCurrentTab, currentTab }) =>
     } finally {
       setLoading(false);
     }
-  }, [sessionId]);
+  }, [sessionId, user]);
 
   // Fetch history when component mounts or when switching to History tab (index 4)
   useEffect(() => {
     if (currentTab === 4) {
+      // Check if user is logged in
+      if (!user) {
+        setError('Please log in to view benchmark history');
+        setLoading(false);
+        return;
+      }
       fetchHistory();
     }
-  }, [currentTab, fetchHistory]);
+  }, [currentTab, fetchHistory, user]);
 
   const handleRowClick = async (resultId: number): Promise<void> => {
     try {
@@ -130,6 +145,7 @@ const HistoryTab: React.FC<HistoryTabProps> = ({ setCurrentTab, currentTab }) =>
         typeof data.result === 'string' ? JSON.parse(data.result) : data.result;
       const resultMetadata: ResultMetadata = {
         id: data.id,
+        userId: data.user_id,
         timestamp: data.timestamp,
         sessionId: data.session_id,
         version: data.version,
@@ -163,7 +179,7 @@ const HistoryTab: React.FC<HistoryTabProps> = ({ setCurrentTab, currentTab }) =>
   if (error) {
     return (
       <Box sx={{ p: 3 }}>
-        <Typography color="error">Error: {error}</Typography>
+        <Alert severity="error">{error}</Alert>
       </Box>
     );
   }
