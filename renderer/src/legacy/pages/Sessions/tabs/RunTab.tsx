@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import store from '../../../redux/store';
 import { useSelector } from 'react-redux';
 import {
@@ -42,6 +42,8 @@ const RunTab: React.FC<RunTabProps> = (props) => {
   const headers = useSelector((state: RootState) => state.headers);
   const params = useSelector((state: RootState) => state.params);
   const contentType = useSelector((state: RootState) => state.contentType);
+  const prevSessionIdRef = useRef<string>(sessionId);
+
   useEffect(() => {
     return () => {
       // console.log('Resetting runTabConfig and validUserInput');
@@ -50,7 +52,13 @@ const RunTab: React.FC<RunTabProps> = (props) => {
   }, []);
 
   useEffect(() => {
-    // console.log('Checking if user input is valid');
+    // If sessionId changed, update the ref and don't trigger runTest
+    if (prevSessionIdRef.current !== sessionId) {
+      prevSessionIdRef.current = sessionId;
+      return;
+    }
+
+    // Only trigger runTest if validUserInput.valid is true and sessionId hasn't changed
     if (validUserInput.valid) {
       store.dispatch(runTest(sessionId));
     }

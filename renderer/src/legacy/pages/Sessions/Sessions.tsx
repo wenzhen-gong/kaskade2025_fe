@@ -98,8 +98,10 @@ const Sessions: React.FC = () => {
 
   // Clear session-related state when session changes, and switch to Overview tab
   useEffect(() => {
+    // Clear state first to prevent RunTab from triggering runTest with old state
     dispatch(clearSessionState());
-    setCurrentTab(0); // Switch to Overview tab
+    // Switch to Overview tab
+    setCurrentTab(0);
   }, [sessionId, dispatch]);
 
   // Auto-switch to Result tab when test completes
