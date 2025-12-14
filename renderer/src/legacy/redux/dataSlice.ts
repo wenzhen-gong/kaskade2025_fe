@@ -52,6 +52,7 @@ export const runTest = createAsyncThunk('datafile/runTest', async (sessionId: st
 
   // Send a fetch request to backend to save result
   const saveResultRequest = {
+    userId: state.user?.id,
     sessionId: sessionId,
     version: '1.0.0',
     config: finalRunTabConfig,
@@ -64,6 +65,7 @@ export const runTest = createAsyncThunk('datafile/runTest', async (sessionId: st
   console.log(`saveResultResponse: ${saveResultResponse}`);
   const resultMetadata: ResultMetadata = {
     id: saveResultResponse.id,
+    userId: saveResultResponse.userId,
     timestamp: saveResultResponse.timestamp,
     sessionId: saveResultResponse.sessionId,
     version: saveResultResponse.version,
