@@ -42,6 +42,8 @@ const App: React.FC = () => {
     }
     return null;
   });
+  const user = useSelector((state: RootState) => state.user);
+
 
   // The overall page layout.
   const Layout: React.FC<LayoutProps> = (props) => {
@@ -53,8 +55,8 @@ const App: React.FC = () => {
       <PageContainer>
         <HeadBar />
         <MainContainer>
-          <NavBar page={props.page} />
-          <SideBar page={props.page} />
+          {user && <NavBar page={props.page} />}
+          {user && <SideBar page={props.page} />}
           <OutletContainer>
             <Outlet />
           </OutletContainer>

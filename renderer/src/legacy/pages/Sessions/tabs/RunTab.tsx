@@ -32,11 +32,11 @@ interface RunTabProps {
 }
 
 const RunTab: React.FC<RunTabProps> = (props) => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const urlParams = useParams();
   const sessionId = urlParams.id || 'default session';
 
-  const user = useSelector((state: RootState) => state.user);
+  // const user = useSelector((state: RootState) => state.user);
   const runTabConfig = useSelector((state: RootState) => state.runTabConfig);
   const validUserInput = useSelector((state: RootState) => state.validUserInput);
   const headers = useSelector((state: RootState) => state.headers);
@@ -194,17 +194,17 @@ const RunTab: React.FC<RunTabProps> = (props) => {
       }
     }
 
-    // 校验 user
-    if (!user) {
-      store.dispatch(
-        setValidUserInput({
-          valid: false,
-          flag: !validUserInput.flag,
-          error: 'Please log in first.'
-        })
-      );
-      return;
-    }
+    // // 校验 user
+    // if (!user) {
+    //   store.dispatch(
+    //     setValidUserInput({
+    //       valid: false,
+    //       flag: !validUserInput.flag,
+    //       error: 'Please log in first.'
+    //     })
+    //   );
+    //   return;
+    // }
 
     // 如果所有检查通过
     store.dispatch(

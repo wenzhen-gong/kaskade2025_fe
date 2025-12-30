@@ -49,37 +49,40 @@ export const runTest = createAsyncThunk('datafile/runTest', async (sessionId: st
   console.log('finalRunTabConfig in runTest Thunk: ', finalRunTabConfig);
 
   const result: Result = await window.api.runLoadTest(finalRunTabConfig);
+  if (state.user) {
+    // Send a fetch request to backend to save result
+    const saveResultRequest = {
+      userId: state.user?.id,
+      sessionId: sessionId,
+      version: '1.0.0',
+      config: finalRunTabConfig,
+      result: result
+    };
 
-  // Send a fetch request to backend to save result
-  const saveResultRequest = {
-    userId: state.user?.id,
-    sessionId: sessionId,
-    version: '1.0.0',
-    config: finalRunTabConfig,
-    result: result
-  };
+    const saveResultResponse = await fetch(
+      'https://kaskade-backend-483052428154.asia-east1.run.app/benchmarkresult',
+      {
+        method: 'POST',
+        body: JSON.stringify(saveResultRequest)
+      }
+    ).then((res) => res.json());
+    console.log(`saveResultResponse: ${saveResultResponse}`);
+    const resultMetadata: ResultMetadata = {
+      id: saveResultResponse.id,
+      userId: saveResultResponse.userId,
+      timestamp: saveResultResponse.timestamp,
+      sessionId: saveResultResponse.sessionId,
+      version: saveResultResponse.version,
+      successRatio: saveResultResponse.successRatio,
+      p50Latency: saveResultResponse.p50Latency,
+      p95Latency: saveResultResponse.p95Latency,
+      throughput: saveResultResponse.throughput
+    };
 
-  const saveResultResponse = await fetch(
-    'https://kaskade-backend-483052428154.asia-east1.run.app/benchmarkresult',
-    {
-      method: 'POST',
-      body: JSON.stringify(saveResultRequest)
-    }
-  ).then((res) => res.json());
-  console.log(`saveResultResponse: ${saveResultResponse}`);
-  const resultMetadata: ResultMetadata = {
-    id: saveResultResponse.id,
-    userId: saveResultResponse.userId,
-    timestamp: saveResultResponse.timestamp,
-    sessionId: saveResultResponse.sessionId,
-    version: saveResultResponse.version,
-    successRatio: saveResultResponse.successRatio,
-    p50Latency: saveResultResponse.p50Latency,
-    p95Latency: saveResultResponse.p95Latency,
-    throughput: saveResultResponse.throughput
-  };
-
-  return { result, resultMetadata };
+    return { result, resultMetadata };
+  } else {
+    return { result, resultMetadata: null };
+  }
 });
 
 const dataSlice = createSlice({
@@ -264,7 +267,7 @@ const dataSlice = createSlice({
     },
     setResult: (state, action) => {
       state.result = action.payload.result;
-      state.resultMetadata = action.payload.resultMetadata;
+      state.resultMetadata = action.payload.resultMetadata ?? undefined;
     },
     clearSessionState: (state) => {
       state.result = undefined;
@@ -276,9 +279,8 @@ const dataSlice = createSlice({
   // Reducers for asyncthunk
   extraReducers: (builder) => {
     builder.addCase(runTest.fulfilled, (state, action) => {
-      console.log(action.payload);
       state.result = action.payload.result;
-      state.resultMetadata = action.payload.resultMetadata;
+      state.resultMetadata = action.payload.resultMetadata ?? undefined;
     });
   }
 });
