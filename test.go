@@ -3,8 +3,10 @@ package main
 
 import (
 	"fmt"
+	"os"
 )
 
 func main() {
-	fmt.Println([]byte("codesmith"))
+	fmt.Print(os.Getenv("MYENV"), '!')
+
 }

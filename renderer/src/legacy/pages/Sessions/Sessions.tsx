@@ -86,28 +86,37 @@ const Sessions: React.FC = () => {
 
   const navigate = useNavigate();
 
-  // Tab bar's state that represents the currently selected tab.
-  // 0 = overview, 1 = authorization, 2 = run, 3 = result, 4 = history.
-  const [currentTab, setCurrentTab] = useState<number>(0); // Overview
+  // Get result from state to detect when test completes
+  const result = useSelector((state: RootState) => state.result);
+  const user = useSelector((state: RootState) => state.user);
+
+  // Tab indices:
+  // When user exists: Overview(0), Authorization(1), Run(2), Result(3), History(4)
+  // When user doesn't exist: Run(0), Result(1), History(2)
+  // currentTab stores the logical index (0-based for visible tabs)
+  const [currentTab, setCurrentTab] = useState<number>(0);
+
   const handleTabChange = (event: React.SyntheticEvent, newValue: number): void => {
     setCurrentTab(newValue);
   };
 
-  // Get result from state to detect when test completes
-  const result = useSelector((state: RootState) => state.result);
-
-  // Clear session-related state when session changes, and switch to Overview tab
+  // Clear session-related state when session changes, and switch to appropriate initial tab
   useEffect(() => {
     dispatch(clearSessionState());
-    setCurrentTab(0); // Switch to Overview tab
-  }, [sessionId, dispatch]);
+    if (user) {
+      setCurrentTab(0); // Switch to Overview tab when user exists
+    } else {
+      setCurrentTab(0); // Switch to Run tab (logical index 0) when user doesn't exist
+    }
+  }, [sessionId, dispatch, user]);
 
   // Auto-switch to Result tab when test completes
   useEffect(() => {
     if (result) {
-      setCurrentTab(3); // Switch to Result tab (index 3)
+      // Result tab is at logical index 1 when no user, index 3 when user exists
+      setCurrentTab(user ? 3 : 1);
     }
-  }, [result]);
+  }, [result, user]);
 
   return (
     <SessionsDiv>
@@ -126,7 +135,7 @@ const Sessions: React.FC = () => {
           variant="h6"
           component="h6"
           onClick={() => {
-            setCurrentTab(0);
+            setCurrentTab(0); // Always switch to first tab (Overview if user exists, Run if not)
             navigate('/sessions/' + sessionId);
           }}
           sx={{ cursor: 'pointer' }}
@@ -150,27 +159,31 @@ const Sessions: React.FC = () => {
             aria-label="session tab bar"
             variant="fullWidth"
           >
-            <Tab label="Overview" {...a11yProps(0)} />
-            <Tab label="Authorization" {...a11yProps(1)} />
-            <Tab label="Run" {...a11yProps(2)} />
-            <Tab label="Result" {...a11yProps(3)} />
-            <Tab label="History" {...a11yProps(4)} />
+            {user && <Tab label="Overview" {...a11yProps(0)} />}
+            {user && <Tab label="Authorization" {...a11yProps(1)} />}
+            <Tab label="Run" {...a11yProps(user ? 2 : 0)} />
+            <Tab label="Result" {...a11yProps(user ? 3 : 1)} />
+            <Tab label="History" {...a11yProps(user ? 4 : 2)} />
           </Tabs>
         </Box>
         <Box sx={{ flexGrow: 1, overflow: 'hidden' }}>
-          <CustomTabPanel value={currentTab} index={0}>
-            <OverviewTab setCurrentTab={setCurrentTab} />
-          </CustomTabPanel>
-          <CustomTabPanel value={currentTab} index={1}>
-            <AuthorizationTab />
-          </CustomTabPanel>
-          <CustomTabPanel value={currentTab} index={2}>
+          {user && (
+            <CustomTabPanel value={currentTab} index={0}>
+              <OverviewTab setCurrentTab={setCurrentTab} />
+            </CustomTabPanel>
+          )}
+          {user && (
+            <CustomTabPanel value={currentTab} index={1}>
+              <AuthorizationTab />
+            </CustomTabPanel>
+          )}
+          <CustomTabPanel value={currentTab} index={user ? 2 : 0}>
             <RunTab setCurrentTab={setCurrentTab} />
           </CustomTabPanel>
-          <CustomTabPanel value={currentTab} index={3}>
+          <CustomTabPanel value={currentTab} index={user ? 3 : 1}>
             <ResultTab />
           </CustomTabPanel>
-          <CustomTabPanel value={currentTab} index={4}>
+          <CustomTabPanel value={currentTab} index={user ? 4 : 2}>
             <HistoryTab setCurrentTab={setCurrentTab} currentTab={currentTab} />
           </CustomTabPanel>
         </Box>

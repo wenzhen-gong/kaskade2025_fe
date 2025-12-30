@@ -74,13 +74,16 @@ const SignInSignUp: React.FC = () => {
     store.dispatch(setSignupLoading(true));
 
     try {
-      const response = await fetch('http://localhost:8080/signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(signupFormData)
-      });
+      const response = await fetch(
+        'https://kaskade-backend-483052428154.asia-east1.run.app/signup',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(signupFormData)
+        }
+      );
 
       const result = await response.json();
 
@@ -104,14 +107,17 @@ const SignInSignUp: React.FC = () => {
     store.dispatch(setSigninLoading(true));
 
     try {
-      const response = await fetch('http://localhost:8080/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(signinFormData),
-        credentials: 'include'
-      });
+      const response = await fetch(
+        'https://kaskade-backend-483052428154.asia-east1.run.app/login',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(signinFormData),
+          credentials: 'include'
+        }
+      );
 
       const result = await response.json();
 
