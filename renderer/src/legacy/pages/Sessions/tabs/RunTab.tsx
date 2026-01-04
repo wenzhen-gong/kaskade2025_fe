@@ -47,7 +47,7 @@ const RunTab: React.FC<RunTabProps> = () => {
   // use setRunTabData reducer to manage runTabConfig state centrally
   const handleInputChange = (inputName: string, inputValue: string | number): void => {
     const config = { ...runTabConfig };
-    if (inputName === 'URL') {
+    if (inputName === 'serverUrl') {
       config[inputName] = inputValue as string;
     } else {
       config[inputName] = Number(inputValue);
@@ -56,16 +56,16 @@ const RunTab: React.FC<RunTabProps> = () => {
   };
 
   const validateUserInput = (): void => {
-    // 校验 URL
+    // 校验 Server URL
     if (
-      typeof runTabConfig.URL !== 'string' ||
-      !/^https?:\/\/[^\s/$.?#].[^\s]*$/i.test(runTabConfig.URL)
+      typeof runTabConfig.serverUrl !== 'string' ||
+      !/^https?:\/\/[^\s/$.?#].[^\s]*$/i.test(runTabConfig.serverUrl)
     ) {
       store.dispatch(
         setValidUserInput({
           valid: false,
           flag: !validUserInput.flag,
-          error: 'URL must be a valid string URL'
+          error: 'Server URL must be a valid string URL'
         })
       );
       return;
@@ -121,11 +121,11 @@ const RunTab: React.FC<RunTabProps> = () => {
         }}
       >
         <TextField
-          label="URL"
+          label="Server URL"
           variant="outlined"
-          value={runTabConfig.URL || ''}
+          value={runTabConfig.serverUrl || ''}
           onChange={(e) => {
-            handleInputChange('URL', e.target.value);
+            handleInputChange('serverUrl', e.target.value);
           }}
           fullWidth
         />

@@ -14,7 +14,7 @@ import (
 )
 
 type Config struct {
-	URL         string            `json:"URL"`
+	ServerURL   string            `json:"serverUrl"`
 	Concurrency int               `json:"concurrencyNumber"`
 	Count       int               `json:"totalRequests"`
 	Method      string            `json:"httpMethod"`
@@ -54,7 +54,7 @@ func main() {
 			defer wg.Done()
 			body := strings.NewReader(config.Payload)
 
-			req, _ := http.NewRequest(config.Method, config.URL, body)
+			req, _ := http.NewRequest(config.Method, config.ServerURL, body)
 			for k, v := range config.Headers {
 				req.Header.Set(k, v)
 			}

@@ -97,7 +97,7 @@ export interface Session {
 
 // RunTab相关的类型定义
 export interface RunTabConfig {
-  URL?: string;
+  serverUrl?: string;
   testDuration?: number;
   concurrencyNumber?: number;
   totalRequests?: number;
