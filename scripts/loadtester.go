@@ -92,25 +92,13 @@ func main() {
 
 			// Build full URL with server URL and request URL
 			// Params are already included in request.URL
-			// Handle trailing/leading slashes properly:
-			// - If serverUrl ends with / and request.URL starts with /, keep only one /
-			// - If serverUrl doesn't end with / and request.URL doesn't start with /, add one /
-			// - Otherwise, concatenate directly
-			fullURL := config.ServerURL
+			// Remove trailing / from serverURL, add leading / to request.URL if needed
+			fullURL := strings.TrimSuffix(config.ServerURL, "/")
 			if request.URL != "" {
-				serverEndsWithSlash := strings.HasSuffix(fullURL, "/")
-				requestStartsWithSlash := strings.HasPrefix(request.URL, "/")
-
-				if serverEndsWithSlash && requestStartsWithSlash {
-					// Both have /, remove one from request.URL
-					fullURL += request.URL[1:]
-				} else if !serverEndsWithSlash && !requestStartsWithSlash {
-					// Neither has /, add one
-					fullURL += "/" + request.URL
-				} else {
-					// One has /, concatenate directly
-					fullURL += request.URL
+				if !strings.HasPrefix(request.URL, "/") {
+					fullURL += "/"
 				}
+				fullURL += request.URL
 			}
 
 			// Build request body
