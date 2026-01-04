@@ -77,7 +77,10 @@ export interface Request {
   requestName: string;
   url: string;
   method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
-  headers?: Record<string, string>;
+  reqBody?: string;
+  headers?: Header[];
+  params?: Param[];
+  contentType?: string | null;
 }
 
 export interface Session {

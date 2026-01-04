@@ -145,7 +145,11 @@ const dataSlice = createSlice({
         requestId: requestId,
         requestName: 'New Request',
         method: 'GET',
-        url: ''
+        url: '',
+        reqBody: '',
+        headers: [],
+        params: [],
+        contentType: null
       };
       for (let i = 0; i < state.datafile.length; i++) {
         if (state.datafile[i].sessionId === sessionId) {
@@ -227,6 +231,29 @@ const dataSlice = createSlice({
       // call main process to write data file
       window.api.writeDataFile(JSON.stringify(state.datafile));
     },
+    updateRequest: (state, action) => {
+      const sessionId = action.payload.sessionId;
+      const requestId = action.payload.requestId;
+      const updates = action.payload.updates;
+      for (let i = 0; i < state.datafile.length; i++) {
+        if (state.datafile[i].sessionId === sessionId) {
+          for (let j = 0; j < state.datafile[i].requests.length; j++) {
+            if (state.datafile[i].requests[j].requestId === requestId) {
+              state.datafile[i].requests[j] = {
+                ...state.datafile[i].requests[j],
+                ...updates
+              };
+              state.datafile[i].lastModified = Date.now();
+              break;
+            }
+          }
+          break;
+        }
+      }
+
+      // call main process to write data file
+      window.api.writeDataFile(JSON.stringify(state.datafile));
+    },
     setSignupError: (state, action) => {
       state.signupError = action.payload;
     },
@@ -295,6 +322,7 @@ export const {
   renameSession,
   updateSessionOverview,
   deleteRequest,
+  updateRequest,
   setSignupError,
   setOpenSignup,
   setSignupLoading,
