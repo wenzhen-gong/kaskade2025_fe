@@ -23,15 +23,15 @@ interface RequestsProps {
   // Add props if needed
 }
 
+const RequestDiv = styled.div`
+  padding: 50px;
+`;
+
 const Requests: React.FC<RequestsProps> = () => {
   const urlParams = useParams();
   const sessionId = urlParams.id ? Number(urlParams.id) : null;
   const requestId = urlParams.requestId ? Number(urlParams.requestId) : null;
   const dispatch = useDispatch();
-
-  const RequestDiv = styled.div`
-    padding: 50px;
-  `;
 
   // Get the current request from session.requests array
   const currentRequest = useSelector((state: RootState) => {
