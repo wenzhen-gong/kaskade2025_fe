@@ -1,0 +1,359 @@
+[
+  {
+    "sessionId": 1,
+    "overview": "This session simulates a user that logs in to our website. The user then performs some browsing activities over the category pages and product detail pages. Finally, the user adds a product item into the shopping cart, and checks out.\nThis session involves a mix of GET and POST requests, and is considered a core user flow of our website.\nIn production, we see about 12% of user sessions follow this pattern.\n\n",
+    "createdBy": "Alice",
+    "createdOn": 1705797900000,
+    "lastModified": 1705798050000,
+    "servers": ["localhost:3000"],
+    "requests": [
+      {
+        "requestId": 0,
+        "requestName": "Get all users",
+        "url": "/api/getallusers",
+        "method": "GET",
+        "headers": [],
+        "contentType": "application/json"
+      },
+      {
+        "requestId": 1,
+        "requestName": "Login",
+        "url": "/api/login",
+        "method": "POST",
+        "headers": [
+            {
+                "key": "Connection",
+                "value": "keep-alive"
+            }
+        ],
+        "contentType": "application/json"
+      },
+      {
+        "requestId": 2,
+        "requestName": "add to cart",
+        "url": "/api/cart",
+        "method": "POST",
+        "headers": [
+            {
+                "key": "Connection",
+                "value": "keep-alive"
+            }
+        ],
+        "contentType": "application/json"
+      },
+      {
+        "requestId": 3,
+        "requestName": "checkout",
+        "url": "/api/checkout",
+        "method": "POST",
+        "headers": [],
+        "contentType": "application/json"
+      },
+      {
+        "requestId": 4,
+        "requestName": "New Request",
+        "method": "GET"
+      }
+    ],
+    "history": [
+      {
+        "timestamp": 1660926192826,
+        "testDuration": 10,
+        "concurrentUsers": 100,
+        "targetThroughput": 1000,
+        "numOfWorkers": 100,
+        "result": {
+          "latencyStats": {
+            "Get all users": {
+              "average": 11,
+              "mean": 11,
+              "stddev": 10.31,
+              "min": 1,
+              "max": 30,
+              "total": 8,
+              "p0_001": 1,
+              "p0_01": 1,
+              "p0_1": 1,
+              "p1": 1,
+              "p2_5": 1,
+              "p10": 1,
+              "p25": 2,
+              "p50": 3,
+              "p75": 20,
+              "p90": 30,
+              "p97_5": 30,
+              "p99": 30,
+              "p99_9": 30,
+              "p99_99": 30,
+              "p99_999": 30
+            },
+            "Login": {
+              "average": 11,
+              "mean": 11,
+              "stddev": 10.31,
+              "min": 1,
+              "max": 30,
+              "total": 8,
+              "p0_001": 1,
+              "p0_01": 1,
+              "p0_1": 1,
+              "p1": 1,
+              "p2_5": 1,
+              "p10": 1,
+              "p25": 2,
+              "p50": 20,
+              "p75": 25,
+              "p90": 40,
+              "p97_5": 100,
+              "p99": 150,
+              "p99_9": 300,
+              "p99_99": 300,
+              "p99_999": 300
+            }
+          },
+          "requestThroughputStats": {
+            "Get all users": {
+              "average": 2.4,
+              "mean": 2.4,
+              "stddev": 2.16,
+              "min": 1,
+              "max": 8,
+              "total": 10,
+              "p0_001": 0,
+              "p0_01": 0,
+              "p0_1": 0,
+              "p1": 0,
+              "p2_5": 0,
+              "p10": 0,
+              "p25": 1,
+              "p50": 2,
+              "p75": 3,
+              "p90": 4,
+              "p97_5": 8,
+              "p99": 8,
+              "p99_9": 8,
+              "p99_99": 8,
+              "p99_999": 8
+            },
+            "Login": {
+              "average": 2.4,
+              "mean": 2.4,
+              "stddev": 2.16,
+              "min": 1,
+              "max": 8,
+              "total": 10,
+              "p0_001": 0,
+              "p0_01": 0,
+              "p0_1": 0,
+              "p1": 0,
+              "p2_5": 0,
+              "p10": 0,
+              "p25": 1,
+              "p50": 2,
+              "p75": 3,
+              "p90": 4,
+              "p97_5": 8,
+              "p99": 8,
+              "p99_9": 8,
+              "p99_99": 8,
+              "p99_999": 8
+            }
+          },
+          "averagRequestThroughput": 2.4,
+          "averageByteThroughput": 36,
+          "byteThroughputStats": {
+            "Get all users": {
+              "average": 2.4,
+              "mean": 2.4,
+              "stddev": 2.16,
+              "min": 1,
+              "max": 8,
+              "total": 10,
+              "p0_001": 0,
+              "p0_01": 0,
+              "p0_1": 0,
+              "p1": 0,
+              "p2_5": 0,
+              "p10": 0,
+              "p25": 1,
+              "p50": 2,
+              "p75": 3,
+              "p90": 4,
+              "p97_5": 8,
+              "p99": 8,
+              "p99_9": 8,
+              "p99_99": 8,
+              "p99_999": 8
+            },
+            "Login": {
+              "average": 2.4,
+              "mean": 2.4,
+              "stddev": 2.16,
+              "min": 1,
+              "max": 8,
+              "total": 10,
+              "p0_001": 0,
+              "p0_01": 0,
+              "p0_1": 0,
+              "p1": 0,
+              "p2_5": 0,
+              "p10": 0,
+              "p25": 1,
+              "p50": 2,
+              "p75": 3,
+              "p90": 4,
+              "p97_5": 8,
+              "p99": 8,
+              "p99_9": 8,
+              "p99_99": 8,
+              "p99_999": 8
+            }
+          }
+        }
+      },
+      {
+        "timestamp": 1692412593000,
+        "testDuration": 20,
+        "concurrentUsers": 200,
+        "targetThroughput": 2000,
+        "numOfWorkers": 200,
+        "result": {
+          "latencyStats": {
+            "s0_r0": {
+              "average": 11,
+              "mean": 11,
+              "stddev": 10.31,
+              "min": 1,
+              "max": 30,
+              "total": 8,
+              "p0_001": 1,
+              "p0_01": 1,
+              "p0_1": 1,
+              "p1": 1,
+              "p2_5": 1,
+              "p10": 1,
+              "p25": 2,
+              "p50": 3,
+              "p75": 20,
+              "p90": 30,
+              "p97_5": 30,
+              "p99": 30,
+              "p99_9": 30,
+              "p99_99": 30,
+              "p99_999": 30
+            },
+            "s0_r1": {
+              "average": 11,
+              "mean": 11,
+              "stddev": 10.31,
+              "min": 1,
+              "max": 30,
+              "total": 8,
+              "p0_001": 1,
+              "p0_01": 1,
+              "p0_1": 1,
+              "p1": 1,
+              "p2_5": 1,
+              "p10": 1,
+              "p25": 2,
+              "p50": 3,
+              "p75": 20,
+              "p90": 30,
+              "p97_5": 30,
+              "p99": 30,
+              "p99_9": 30,
+              "p99_99": 30,
+              "p99_999": 30
+            }
+          },
+          "averagRequestThroughput": 4.8,
+          "averageByteThroughput": 72,
+          "requestThroughputStats": {
+            "average": 2.4,
+            "mean": 2.4,
+            "stddev": 2.16,
+            "min": 1,
+            "max": 8,
+            "total": 10,
+            "p0_001": 0,
+            "p0_01": 0,
+            "p0_1": 0,
+            "p1": 0,
+            "p2_5": 0,
+            "p10": 0,
+            "p25": 1,
+            "p50": 2,
+            "p75": 3,
+            "p90": 4,
+            "p97_5": 8,
+            "p99": 8,
+            "p99_9": 8,
+            "p99_99": 8,
+            "p99_999": 8
+          },
+          "byteThroughputStats": {
+            "average": 36,
+            "mean": 36,
+            "stddev": 27.28,
+            "min": 10,
+            "max": 90,
+            "total": 10,
+            "p0_001": 0,
+            "p0_01": 0,
+            "p0_1": 0,
+            "p1": 0,
+            "p2_5": 0,
+            "p10": 0,
+            "p25": 20,
+            "p50": 30,
+            "p75": 40,
+            "p90": 80,
+            "p97_5": 90,
+            "p99": 90,
+            "p99_9": 90,
+            "p99_99": 90,
+            "p99_999": 90
+          }
+        }
+      }
+    ],
+    "sessionName": "Login, add to cart"
+  },
+  {
+    "sessionId": 2,
+    "sessionName": "Checkout",
+    "overview": "This is a second test session.\nTest\n\n\n\n\n",
+    "createdBy": "Alice",
+    "createdOn": 1705798537000,
+    "lastModified": 1705798573000,
+    "servers": ["localhost:3000"],
+    "requests": [
+      {
+        "requestId": 0,
+        "requestName": "Get all users",
+        "url": "/api/getallusers",
+        "method": "GET",
+        "headers": [],
+        "contentType": "application/json"
+      },
+      {
+        "requestId": 1707702254216,
+        "requestName": "New Request"
+      }
+    ],
+    "history": []
+  },
+  {
+    "sessionId": 1729892196204,
+    "sessionName": "New Session",
+    "requests": [
+      {
+        "requestId": 1729892203072,
+        "requestName": "New Request",
+        "method": "GET"
+      }
+    ],
+    "createdOn": 1729892196204,
+    "lastModified": 1729892196204
+  }
+]

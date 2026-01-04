@@ -47,5 +47,6 @@ ipcMain.handle('read-data-file', () => {
 });
 
 ipcMain.on('write-data-file', (event, content) => {
-  fs.writeFileSync(path.join(__dirname, '../datafile.json'), content);
+  const filePath = path.join(app.getAppPath(), 'datafile.json');
+  fs.writeFileSync(filePath, content);
 });
