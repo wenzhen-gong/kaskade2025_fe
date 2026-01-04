@@ -98,8 +98,6 @@ export interface Session {
 // RunTab相关的类型定义
 export interface RunTabConfig {
   URL?: string;
-  httpMethod?: string;
-  reqBody?: string;
   testDuration?: number;
   concurrencyNumber?: number;
   totalRequests?: number;
@@ -141,9 +139,6 @@ export interface State {
   datafile: Session[];
   configFile?: Session;
   runTabConfig: RunTabConfig;
-  headers: Header[];
-  params: Param[];
-  contentType: string | null;
   validUserInput: ValidUserInput;
   result?: Result;
   signupError: string | null;

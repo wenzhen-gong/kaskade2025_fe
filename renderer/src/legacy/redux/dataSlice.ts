@@ -4,9 +4,6 @@ import { Request, Session, State, Result, ResultMetadata } from '../model';
 const initialState: State = {
   datafile: [], // Initial state that'll be updated to action payload (datafile)
   runTabConfig: {},
-  headers: [],
-  params: [],
-  contentType: null,
   validUserInput: { valid: false, flag: false, error: null },
   result: undefined,
   // 这里开始是signup signin的model里面的state
@@ -29,23 +26,7 @@ const initialState: State = {
 
 export const runTest = createAsyncThunk('datafile/runTest', async (sessionId: string, thunkAPI) => {
   const state = thunkAPI.getState() as State;
-  // console.log('config in runTest Thunk: ', state.runTabConfig);
-  // console.log('contentType in runTest Thunk: ', state.contentType);
-  // console.log('headers in runTest Thunk: ', state.headers);
-  // console.log('params in runTest Thunk: ', state.params);
-  // let finalURL = state.runTabConfig.URL;
-  // state.params.forEach((param) => (finalURL += '?' + param.key + '=' + param.value + '&'));
-
-  const finalHeaders: Record<string, string> = {};
-  if (state.contentType) {
-    finalHeaders['Content-Type'] = state.contentType;
-  }
-  state.headers.forEach((header) => {
-    finalHeaders[header.key] = header.value;
-  });
-  // console.log('finalHeaders in runTest Thunk: ', finalHeaders);
-  const finalRunTabConfig = { ...state.runTabConfig, finalHeaders };
-  // finalRunTabConfig.URL = finalURL;
+  const finalRunTabConfig = { ...state.runTabConfig };
   console.log('finalRunTabConfig in runTest Thunk: ', finalRunTabConfig);
 
   const result: Result = await window.api.runLoadTest(finalRunTabConfig);
@@ -92,23 +73,7 @@ const dataSlice = createSlice({
 
     resetRunTabConfig: (state) => {
       state.runTabConfig = {};
-      state.headers = [];
-      state.params = [];
-      state.contentType = null;
       state.validUserInput = { valid: false, flag: false, error: null };
-    },
-
-    setContentType: (state, action) => {
-      state.contentType = action.payload;
-    },
-
-    setHeaders: (state, action) => {
-      state.headers = action.payload;
-    },
-
-    setParams: (state, action) => {
-      state.params = action.payload;
-      console.log(state.params);
     },
 
     setValidUserInput: (state, action) => {
@@ -310,9 +275,6 @@ export const {
   setData,
   setRunTabData,
   resetRunTabConfig,
-  setContentType,
-  setHeaders,
-  setParams,
   setValidUserInput,
   currentSessionConfig,
   createSession,
