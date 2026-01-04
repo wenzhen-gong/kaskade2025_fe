@@ -127,6 +127,8 @@ func main() {
 					fullURL += request.URL
 				}
 
+				fmt.Fprintln(os.Stderr, "fullURL: ", fullURL)
+
 				// Build request body
 				body := strings.NewReader(request.ReqBody)
 
