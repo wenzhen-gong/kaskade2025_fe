@@ -13,13 +13,26 @@ import (
 	"time"
 )
 
+type Request struct {
+	RequestID   int      `json:"requestId"`
+	RequestName string   `json:"requestName"`
+	URL         string   `json:"url"`
+	Method      string   `json:"method"`
+	ReqBody     string   `json:"reqBody"`
+	Headers     []Header `json:"headers"`
+	ContentType string   `json:"contentType"`
+}
+
+type Header struct {
+	Key   string `json:"key"`
+	Value string `json:"value"`
+}
+
 type Config struct {
-	ServerURL   string            `json:"serverUrl"`
-	Concurrency int               `json:"concurrencyNumber"`
-	Count       int               `json:"totalRequests"`
-	Method      string            `json:"httpMethod"`
-	Payload     string            `json:"reqBody"`
-	Headers     map[string]string `json:"finalHeaders"`
+	ServerURL   string    `json:"serverUrl"`
+	Concurrency int       `json:"concurrencyNumber"`
+	Count       int       `json:"totalRequests"`
+	Requests    []Request `json:"requests"`
 }
 
 type Result struct {
@@ -46,16 +59,69 @@ func main() {
 
 	sem := make(chan struct{}, config.Concurrency)
 
+	// Build headers map from headers array and contentType
+	buildHeaders := func(headers []Header, contentType string) map[string]string {
+		headerMap := make(map[string]string)
+		if contentType != "" {
+			headerMap["Content-Type"] = contentType
+		}
+		for _, header := range headers {
+			if header.Key != "" {
+				headerMap[header.Key] = header.Value
+			}
+		}
+		return headerMap
+	}
+
+	// Check if requests array is empty
+	if len(config.Requests) == 0 {
+		fmt.Fprintf(os.Stderr, "No requests found in config\n")
+		os.Exit(1)
+	}
+
 	for i := 0; i < config.Count; i++ {
 		wg.Add(1)
 		sem <- struct{}{}
 		go func(index int) {
 			defer func() { <-sem }()
 			defer wg.Done()
-			body := strings.NewReader(config.Payload)
 
-			req, _ := http.NewRequest(config.Method, config.ServerURL, body)
-			for k, v := range config.Headers {
+			// Select a request from the requests array (round-robin)
+			requestIndex := index % len(config.Requests)
+			request := config.Requests[requestIndex]
+
+			// Build full URL with server URL and request URL
+			// Params are already included in request.URL
+			// Handle trailing/leading slashes properly:
+			// - If serverUrl ends with / and request.URL starts with /, keep only one /
+			// - If serverUrl doesn't end with / and request.URL doesn't start with /, add one /
+			// - Otherwise, concatenate directly
+			fullURL := config.ServerURL
+			if request.URL != "" {
+				serverEndsWithSlash := strings.HasSuffix(fullURL, "/")
+				requestStartsWithSlash := strings.HasPrefix(request.URL, "/")
+
+				if serverEndsWithSlash && requestStartsWithSlash {
+					// Both have /, remove one from request.URL
+					fullURL += request.URL[1:]
+				} else if !serverEndsWithSlash && !requestStartsWithSlash {
+					// Neither has /, add one
+					fullURL += "/" + request.URL
+				} else {
+					// One has /, concatenate directly
+					fullURL += request.URL
+				}
+			}
+
+			// Build request body
+			body := strings.NewReader(request.ReqBody)
+
+			// Build headers
+			headers := buildHeaders(request.Headers, request.ContentType)
+
+			// Create HTTP request
+			req, _ := http.NewRequest(request.Method, fullURL, body)
+			for k, v := range headers {
 				req.Header.Set(k, v)
 			}
 

@@ -27,9 +27,19 @@ const initialState: State = {
 export const runTest = createAsyncThunk('datafile/runTest', async (sessionId: string, thunkAPI) => {
   const state = thunkAPI.getState() as State;
   const finalRunTabConfig = { ...state.runTabConfig };
-  console.log('finalRunTabConfig in runTest Thunk: ', finalRunTabConfig);
 
-  const result: Result = await window.api.runLoadTest(finalRunTabConfig);
+  // Get all requests for the current session
+  const sessionIdNum = Number(sessionId);
+  const currentSession = state.datafile.find((session) => session.sessionId === sessionIdNum);
+  const requests = currentSession?.requests || [];
+
+  console.log('finalRunTabConfig in runTest Thunk: ', finalRunTabConfig);
+  console.log('requests in runTest Thunk: ', requests);
+
+  const result: Result = await window.api.runLoadTest({
+    ...finalRunTabConfig,
+    requests: requests
+  });
 
   // Send a fetch request to backend to save result
   const saveResultRequest = {
