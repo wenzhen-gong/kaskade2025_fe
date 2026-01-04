@@ -12,39 +12,45 @@
         "requestName": "Get all users",
         "url": "/api/getallusers",
         "method": "GET",
-        "headers": {
-          "Content-type": "application/json"
-        }
+        "headers": [],
+        "contentType": "application/json"
       },
       {
         "requestId": 1,
         "requestName": "Login",
-        "url": "/api/getallusers",
+        "url": "/api/login",
         "method": "POST",
-        "headers": {
-          "Content-type": "application/json"
-        }
+        "headers": [
+            {
+                "key": "Connection",
+                "value": "keep-alive"
+            }
+        ],
+        "contentType": "application/json"
       },
       {
         "requestId": 2,
         "requestName": "add to cart",
-        "url": "/api/getallusers",
+        "url": "/api/cart",
         "method": "POST",
-        "headers": {
-          "Content-type": "application/json"
-        }
+        "headers": [
+            {
+                "key": "Connection",
+                "value": "keep-alive"
+            }
+        ],
+        "contentType": "application/json"
       },
       {
-        "requestId": 2,
+        "requestId": 3,
         "requestName": "checkout",
-        "url": "/api/getallusers",
+        "url": "/api/checkout",
         "method": "POST",
-        "headers": {
-          "Content-type": "application/json"
-        }
+        "headers": [],
+        "contentType": "application/json"
       },
       {
-        "requestId": 1707880128733,
+        "requestId": 4,
         "requestName": "New Request",
         "method": "GET"
       }
@@ -327,9 +333,8 @@
         "requestName": "Get all users",
         "url": "/api/getallusers",
         "method": "GET",
-        "headers": {
-          "Content-type": "application/json"
-        }
+        "headers": [],
+        "contentType": "application/json"
       },
       {
         "requestId": 1707702254216,

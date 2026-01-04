@@ -35,7 +35,7 @@ const Requests: React.FC<RequestsProps> = () => {
 
   // Get the current request from session.requests array
   const currentRequest = useSelector((state: RootState) => {
-    if (!sessionId || !requestId) return null;
+    if (sessionId === null || requestId === null) return null;
     for (const session of state.datafile) {
       if (session.sessionId === sessionId) {
         const found = session.requests.find((r) => r.requestId === requestId);
@@ -45,6 +45,8 @@ const Requests: React.FC<RequestsProps> = () => {
     return null;
   });
 
+  console.log('Current request: ', currentRequest);
+
   // Convert headers and params from Request format to local state format
   const headers: Header[] = currentRequest?.headers || [];
   const params: Param[] = currentRequest?.params || [];
@@ -52,7 +54,7 @@ const Requests: React.FC<RequestsProps> = () => {
 
   // Helper function to update request in session
   const updateRequestInSession = (updates: Partial<Request>): void => {
-    if (!sessionId || !requestId) return;
+    if (sessionId === null || requestId === null) return;
     dispatch(updateRequest({ sessionId, requestId, updates }));
   };
 

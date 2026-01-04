@@ -62,7 +62,7 @@ const SessionItem: React.FC<SessionItemProps> = (props) => {
           key={i}
           request={props.session.requests[i]}
           sessionId={props.session.sessionId}
-          requestId={i}
+          requestId={props.session.requests[i].requestId}
         />
       );
     }
