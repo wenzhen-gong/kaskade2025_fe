@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { renameSession, updateSessionOverview } from '../../../redux/dataSlice';
 import { useSelector, useDispatch } from 'react-redux';
 import Box from '@mui/material/Box';
@@ -9,7 +9,9 @@ import Button from '@mui/material/Button';
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import Typography from '@mui/material/Typography';
 import { RootState } from '../../../redux/store';
-import { Session } from '../../../model';
+import { IconButton, Tooltip } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import CheckIcon from '@mui/icons-material/Check';
 
 // Define styled elements outside the render function.
 // Otherwise, each re-render will create a new styled element, causing lose of focus.
@@ -70,14 +72,17 @@ interface OverviewTabProps {
 
 const OverviewTab: React.FC<OverviewTabProps> = (props) => {
   console.log('Overview page.');
-  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   // Get the session Id from URL parameters.
   const params = useParams();
   const sessionId = params.id;
-  // console.log("Session Id is : ", sessionId);
+  console.log('Session Id is : ', sessionId);
+  const [isOverviewEditable, setIsOverviewEditable] = useState(false);
 
+  const toggleOverviewEditable = (): void => {
+    setIsOverviewEditable((prev) => !prev);
+  };
   // Get the state of this session.
   const overviewState = useSelector((state: RootState) => {
     for (let i = 0; i < state.datafile.length; i++) {
@@ -144,11 +149,21 @@ const OverviewTab: React.FC<OverviewTabProps> = (props) => {
               fullWidth
               value={overviewState.overview}
               onChange={handleUpdateSessionOverview}
-              InputProps={{
-                disableUnderline: true,
-                style: {}
-              }}
+              disabled={!isOverviewEditable}
             />
+            <Tooltip title={isOverviewEditable ? '锁定' : '编辑'}>
+              <IconButton
+                color={isOverviewEditable ? 'success' : 'default'}
+                onClick={toggleOverviewEditable}
+                size="small"
+              >
+                {isOverviewEditable ? (
+                  <CheckIcon fontSize="small" />
+                ) : (
+                  <EditIcon fontSize="small" />
+                )}
+              </IconButton>
+            </Tooltip>
           </Box>
         </LeftDiv>
         <RightDiv>

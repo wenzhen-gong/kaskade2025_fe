@@ -46,6 +46,6 @@ ipcMain.handle('read-data-file', () => {
   return fs.readFileSync(filePath, 'utf8');
 });
 
-ipcMain.on('write-data-file', (event, content) => {
-  fs.writeFileSync(path.join(__dirname, '../datafile.json'), content);
-});
+// ipcMain.on('write-data-file', (event, content) => {
+//   fs.writeFileSync(path.join(__dirname, '../datafile.json'), content);
+// });

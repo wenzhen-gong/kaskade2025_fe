@@ -20,7 +20,9 @@ const initialState: State = {
   signinLoading: false,
   signinFormData: { username: '', password: '' },
   // 这里开始是后端返回的state
-  user: null,
+  // user: null,
+  // 为了方便测试，先写死一个user
+  user: { id: '1', username: 'wzg', email: 'wzg@email.com' },
   // only for testing
   // user: { username: 'wzg', email: 'wzg@email.com' },
   // 这里开始是Profile的state
@@ -132,7 +134,7 @@ const dataSlice = createSlice({
         sessionId: sessionId,
         sessionName: 'New Session',
         overview: '', // or some default text
-        createdBy: 'anonymous', // or actual user
+        createdBy: state.user?.username ?? 'anonymous', // or actual user
         createdOn: sessionId,
         lastModified: sessionId,
         requests: [],
@@ -142,7 +144,7 @@ const dataSlice = createSlice({
       state.datafile.push(newSession);
 
       // call main process to write data file
-      window.api.writeDataFile(JSON.stringify(state.datafile));
+      // window.api.writeDataFile(JSON.stringify(state.datafile));
     },
 
     addRequest: (state, action) => {
@@ -191,8 +193,9 @@ const dataSlice = createSlice({
     renameSession: (state, action) => {
       const sessionId = action.payload.sessionId;
       const newName = action.payload.newName;
+      const sessionIdNum = typeof sessionId === 'string' ? parseInt(sessionId, 10) : sessionId;
       for (let i = 0; i < state.datafile.length; i++) {
-        if (state.datafile[i].sessionId === sessionId) {
+        if (state.datafile[i].sessionId === sessionIdNum) {
           state.datafile[i].sessionName = newName;
           break;
         }
@@ -205,15 +208,16 @@ const dataSlice = createSlice({
     updateSessionOverview: (state, action) => {
       const sessionId = action.payload.sessionId;
       const newOverview = action.payload.newOverview;
+      const sessionIdNum = typeof sessionId === 'string' ? parseInt(sessionId, 10) : sessionId;
       for (let i = 0; i < state.datafile.length; i++) {
-        if (state.datafile[i].sessionId === sessionId) {
+        if (state.datafile[i].sessionId === sessionIdNum) {
           state.datafile[i].overview = newOverview;
           break;
         }
       }
 
       // call main process to write data file
-      window.api.writeDataFile(JSON.stringify(state.datafile));
+      // window.api.writeDataFile(JSON.stringify(state.datafile));
     },
 
     deleteRequest: (state, action) => {
