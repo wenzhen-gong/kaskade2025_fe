@@ -7,7 +7,7 @@ import {
   addRequest,
   duplicateSession,
   deleteSession,
-  renameSession
+  setShouldFocusSessionName
 } from '../redux/dataSlice.js';
 import RequestItem from './RequestItem';
 import IconButton from '@mui/material/IconButton';
@@ -80,7 +80,12 @@ const SessionItem: React.FC<SessionItemProps> = (props) => {
     } else if (option === 'Duplicate Session') {
       dispatch(duplicateSession(props.session));
     } else if (option === 'Rename Session') {
-      dispatch(renameSession(props.session));
+      // 导航到该 session 的页面（如果还没有）
+      if (selectedSessionId !== props.session.sessionId.toString()) {
+        navigate('/sessions/' + props.session.sessionId);
+      }
+      // 设置 Redux 状态，让 OverviewTab 知道需要聚焦输入框
+      dispatch(setShouldFocusSessionName(true));
     } else if (option === 'Delete Session') {
       dispatch(deleteSession(selectedSessionId));
     }

@@ -26,7 +26,9 @@ const initialState: State = {
   // only for testing
   // user: { username: 'wzg', email: 'wzg@email.com' },
   // 这里开始是Profile的state
-  openProfile: false
+  openProfile: false,
+  // 标记是否需要聚焦 session-name 输入框
+  shouldFocusSessionName: false
 };
 
 export const runTest = createAsyncThunk('datafile/runTest', async (sessionId: string, thunkAPI) => {
@@ -202,7 +204,7 @@ const dataSlice = createSlice({
       }
 
       // call main process to write data file
-      window.api.writeDataFile(JSON.stringify(state.datafile));
+      // window.api.writeDataFile(JSON.stringify(state.datafile));
     },
 
     updateSessionOverview: (state, action) => {
@@ -278,6 +280,9 @@ const dataSlice = createSlice({
       state.resultMetadata = undefined;
       state.validUserInput.valid = false;
       state.validUserInput.flag = !state.validUserInput.flag;
+    },
+    setShouldFocusSessionName: (state, action) => {
+      state.shouldFocusSessionName = action.payload;
     }
   },
   // Reducers for asyncthunk
@@ -316,7 +321,8 @@ export const {
   setUser,
   setOpenProfile,
   setResult,
-  clearSessionState
+  clearSessionState,
+  setShouldFocusSessionName
 } = dataSlice.actions;
 
 export default dataSlice.reducer;

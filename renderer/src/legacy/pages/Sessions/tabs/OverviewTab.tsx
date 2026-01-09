@@ -1,7 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { useParams } from 'react-router-dom';
-import { renameSession, updateSessionOverview } from '../../../redux/dataSlice';
+import {
+  renameSession,
+  updateSessionOverview,
+  setShouldFocusSessionName
+} from '../../../redux/dataSlice';
 import { useSelector, useDispatch } from 'react-redux';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
@@ -73,6 +77,7 @@ interface OverviewTabProps {
 const OverviewTab: React.FC<OverviewTabProps> = (props) => {
   console.log('Overview page.');
   const dispatch = useDispatch();
+  const sessionNameInputRef = useRef<HTMLInputElement>(null);
 
   // Get the session Id from URL parameters.
   const params = useParams();
@@ -92,6 +97,19 @@ const OverviewTab: React.FC<OverviewTabProps> = (props) => {
     }
     return null;
   });
+
+  // 监听 shouldFocusSessionName 状态，聚焦输入框
+  const shouldFocusSessionName = useSelector((state: RootState) => state.shouldFocusSessionName);
+  useEffect(() => {
+    if (shouldFocusSessionName && sessionNameInputRef.current) {
+      sessionNameInputRef.current.focus();
+      // 将光标移动到文本末尾
+      const length = sessionNameInputRef.current.value.length;
+      sessionNameInputRef.current.setSelectionRange(length, length);
+      // 重置状态
+      dispatch(setShouldFocusSessionName(false));
+    }
+  }, [shouldFocusSessionName, dispatch]);
   // console.log("Overview State: ", overviewState)
 
   if (!overviewState) {
@@ -126,7 +144,8 @@ const OverviewTab: React.FC<OverviewTabProps> = (props) => {
       <Box component="form" noValidate autoComplete="off">
         <TextField
           id="session-name"
-          variant="standard"
+          inputRef={sessionNameInputRef}
+          variant="outlined"
           fullWidth
           value={overviewState.sessionName}
           onChange={handleRenameSession}
@@ -151,7 +170,7 @@ const OverviewTab: React.FC<OverviewTabProps> = (props) => {
               onChange={handleUpdateSessionOverview}
               disabled={!isOverviewEditable}
             />
-            <Tooltip title={isOverviewEditable ? '锁定' : '编辑'}>
+            <Tooltip title={isOverviewEditable ? 'Save' : 'Edit'}>
               <IconButton
                 color={isOverviewEditable ? 'success' : 'default'}
                 onClick={toggleOverviewEditable}

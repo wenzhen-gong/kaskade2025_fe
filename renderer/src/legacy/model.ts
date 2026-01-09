@@ -157,4 +157,5 @@ export interface State {
 
   openProfile: boolean;
   resultMetadata?: ResultMetadata;
+  shouldFocusSessionName: boolean;
 }
