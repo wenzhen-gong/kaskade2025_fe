@@ -150,7 +150,8 @@ const dataSlice = createSlice({
     },
 
     addRequest: (state, action) => {
-      const sessionId = action.payload.sessionId;
+      const sessionId = action.payload;
+      const sessionIdNum = typeof sessionId === 'string' ? parseInt(sessionId, 10) : sessionId;
       const requestId = Date.now();
       const newRequest: Request = {
         requestId: requestId,
@@ -159,12 +160,13 @@ const dataSlice = createSlice({
         url: ''
       };
       for (let i = 0; i < state.datafile.length; i++) {
-        if (state.datafile[i].sessionId === sessionId) {
+        if (state.datafile[i].sessionId === sessionIdNum) {
           state.datafile[i].requests.push(newRequest);
+          console.log('state.datafile[i].requests: ', state.datafile[i].requests);
         }
       }
       // call main process to write data file
-      window.api.writeDataFile(JSON.stringify(state.datafile));
+      // window.api.writeDataFile(JSON.stringify(state.datafile));
     },
 
     duplicateSession: (state, action) => {

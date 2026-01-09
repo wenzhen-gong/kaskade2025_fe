@@ -75,7 +75,6 @@ interface OverviewTabProps {
 }
 
 const OverviewTab: React.FC<OverviewTabProps> = (props) => {
-  console.log('Overview page.');
   const dispatch = useDispatch();
   const sessionNameInputRef = useRef<HTMLInputElement>(null);
 
@@ -149,13 +148,13 @@ const OverviewTab: React.FC<OverviewTabProps> = (props) => {
           fullWidth
           value={overviewState.sessionName}
           onChange={handleRenameSession}
-          InputProps={{
-            disableUnderline: true,
-            style: {
-              fontSize: '30px',
-              fontWeight: 700
-            }
-          }}
+          // InputProps={{
+          //   disableUnderline: true,
+          //   style: {
+          //     fontSize: '30px',
+          //     fontWeight: 700
+          //   }
+          // }}
         />
       </Box>
       <TwoPannelDiv>
