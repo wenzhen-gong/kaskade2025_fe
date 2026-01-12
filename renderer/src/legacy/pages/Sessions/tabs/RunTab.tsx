@@ -1,13 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import store from '../../../redux/store';
 import { useSelector, useDispatch } from 'react-redux';
-import {
-  setValidUserInput,
-  setRunTabData,
-  runTest,
-  resetRunTabConfig,
-  addRequest
-} from '../../../redux/dataSlice';
+import { setValidUserInput, setRunTabData, runTest, addRequest } from '../../../redux/dataSlice';
 import { useParams } from 'react-router-dom';
 import { Box, TextField, Button, Stack, Typography } from '@mui/material';
 import { RootState } from '../../../redux/store';
@@ -37,13 +31,6 @@ const RunTab: React.FC<RunTabProps> = () => {
     }
     return null;
   });
-
-  useEffect(() => {
-    return () => {
-      // console.log('Resetting runTabConfig and validUserInput');
-      store.dispatch(resetRunTabConfig());
-    };
-  }, []);
 
   useEffect(() => {
     // If sessionId changed, update the ref and don't trigger runTest

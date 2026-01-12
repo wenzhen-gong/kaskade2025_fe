@@ -36,6 +36,8 @@ export const runTest = createAsyncThunk('datafile/runTest', async (sessionId: st
   console.log('finalRunTabConfig in runTest Thunk: ', finalRunTabConfig);
   console.log('requests in runTest Thunk: ', requests);
 
+  // TODO: set validUserInput to false to prevent duplicate triggering of runs.
+
   const result: Result = await window.api.runLoadTest({
     ...finalRunTabConfig,
     requests: requests
@@ -79,11 +81,6 @@ const dataSlice = createSlice({
 
     setRunTabData: (state, action) => {
       state.runTabConfig = action.payload;
-    },
-
-    resetRunTabConfig: (state) => {
-      state.runTabConfig = {};
-      state.validUserInput = { valid: false, flag: false, error: null };
     },
 
     setValidUserInput: (state, action) => {
@@ -267,6 +264,7 @@ const dataSlice = createSlice({
     clearSessionState: (state) => {
       state.result = undefined;
       state.resultMetadata = undefined;
+      state.runTabConfig = {};
       state.validUserInput.valid = false;
       state.validUserInput.flag = !state.validUserInput.flag;
     }
@@ -284,7 +282,6 @@ const dataSlice = createSlice({
 export const {
   setData,
   setRunTabData,
-  resetRunTabConfig,
   setValidUserInput,
   currentSessionConfig,
   createSession,
