@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { updateRequest } from '../../redux/dataSlice';
 import {
@@ -18,6 +18,7 @@ import {
 import { RootState } from '../../redux/store';
 import { Header, Param } from '../../model';
 import { Request } from '../../model';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 interface RequestsProps {
   // Add props if needed
@@ -32,6 +33,7 @@ const Requests: React.FC<RequestsProps> = () => {
   const sessionId = urlParams.id ? Number(urlParams.id) : null;
   const requestId = urlParams.requestId ? Number(urlParams.requestId) : null;
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   // Get the current request from session.requests array
   const currentRequest = useSelector((state: RootState) => {
@@ -163,6 +165,27 @@ const Requests: React.FC<RequestsProps> = () => {
 
   return (
     <RequestDiv>
+      <Box
+        sx={{
+          marginBottom: 2,
+          paddingBottom: 2,
+          borderBottom: 1,
+          borderColor: 'rgba(255, 255, 255, 0.2)'
+        }}
+      >
+        <Button
+          variant="outlined"
+          onClick={() => {
+            if (sessionId !== null) {
+              navigate(`/sessions/${sessionId}`);
+            }
+          }}
+          sx={{ marginLeft: '20px' }}
+          startIcon={<ArrowBackIcon />}
+        >
+          Back to Session
+        </Button>
+      </Box>
       <Box display={'flex'}>
         <Box
           component="form"

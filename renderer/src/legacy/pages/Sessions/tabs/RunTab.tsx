@@ -1,15 +1,17 @@
 import React, { useEffect, useRef } from 'react';
 import store from '../../../redux/store';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import {
   setValidUserInput,
   setRunTabData,
   runTest,
-  resetRunTabConfig
+  resetRunTabConfig,
+  addRequest
 } from '../../../redux/dataSlice';
 import { useParams } from 'react-router-dom';
 import { Box, TextField, Button, Stack, Typography } from '@mui/material';
 import { RootState } from '../../../redux/store';
+import RequestItem from '../../../sidebars/RequestItem';
 
 interface RunTabProps {
   setCurrentTab?: (tab: number) => void;
@@ -18,11 +20,23 @@ interface RunTabProps {
 const RunTab: React.FC<RunTabProps> = () => {
   const urlParams = useParams();
   const sessionId = urlParams.id || 'default session';
+  const dispatch = useDispatch();
 
   const user = useSelector((state: RootState) => state.user);
   const runTabConfig = useSelector((state: RootState) => state.runTabConfig);
   const validUserInput = useSelector((state: RootState) => state.validUserInput);
   const prevSessionIdRef = useRef<string>(sessionId);
+
+  // Get the current session data
+  const currentSession = useSelector((state: RootState) => {
+    const sessionIdNum = Number(sessionId);
+    for (let i = 0; i < state.datafile.length; i++) {
+      if (state.datafile[i].sessionId === sessionIdNum) {
+        return state.datafile[i];
+      }
+    }
+    return null;
+  });
 
   useEffect(() => {
     return () => {
@@ -109,7 +123,7 @@ const RunTab: React.FC<RunTabProps> = () => {
   };
 
   return (
-    <Box display={'flex'}>
+    <Box display={'flex'} gap={4}>
       <Box
         component="form"
         sx={{
@@ -182,6 +196,48 @@ const RunTab: React.FC<RunTabProps> = () => {
             {validUserInput.error}
           </Typography>
         )}
+      </Box>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          width: '400px',
+          marginLeft: '20px',
+          border: '1px solid',
+          borderColor: 'divider',
+          borderRadius: 1,
+          padding: 2
+        }}
+      >
+        <Typography variant="h6" sx={{ marginBottom: 2 }}>
+          Requests in this session
+        </Typography>
+        {currentSession && currentSession.requests.length > 0 ? (
+          currentSession.requests.map((request) => (
+            <RequestItem
+              key={request.requestId}
+              request={request}
+              sessionId={currentSession.sessionId}
+              requestId={request.requestId}
+            />
+          ))
+        ) : (
+          <Typography variant="body2" sx={{ color: 'text.secondary', marginTop: 2 }}>
+            No requests in this session
+          </Typography>
+        )}
+        <Button
+          variant="outlined"
+          size="small"
+          onClick={() => {
+            if (currentSession) {
+              dispatch(addRequest({ sessionId: currentSession.sessionId }));
+            }
+          }}
+          sx={{ marginTop: 2 }}
+        >
+          Add Request
+        </Button>
       </Box>
     </Box>
   );
