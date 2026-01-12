@@ -61,7 +61,9 @@ const Requests: React.FC<RequestsProps> = () => {
   const handleInputChange = (inputName: string, inputValue: string | number): void => {
     if (!currentRequest) return;
 
-    if (inputName === 'httpMethod') {
+    if (inputName === 'requestName') {
+      updateRequestInSession({ requestName: inputValue as string });
+    } else if (inputName === 'httpMethod') {
       updateRequestInSession({ method: inputValue as Request['method'] });
     } else if (inputName === 'reqBody') {
       updateRequestInSession({ reqBody: inputValue as string });
@@ -161,7 +163,6 @@ const Requests: React.FC<RequestsProps> = () => {
 
   return (
     <RequestDiv>
-      <p>Request: {currentRequest.requestName}</p>
       <Box display={'flex'}>
         <Box
           component="form"
@@ -173,6 +174,15 @@ const Requests: React.FC<RequestsProps> = () => {
             marginLeft: '20px'
           }}
         >
+          <TextField
+            label="Request Name"
+            variant="outlined"
+            value={currentRequest?.requestName || ''}
+            onChange={(e) => {
+              handleInputChange('requestName', e.target.value);
+            }}
+            fullWidth
+          />
           <FormControl fullWidth variant="outlined">
             <InputLabel id="method-label">HTTP Method</InputLabel>
             <Select

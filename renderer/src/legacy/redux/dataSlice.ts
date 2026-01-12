@@ -114,6 +114,7 @@ const dataSlice = createSlice({
     },
 
     addRequest: (state, action) => {
+      console.log("Add request: ", action.payload);
       const sessionId = action.payload.sessionId;
       const requestId = Date.now();
       const newRequest: Request = {
