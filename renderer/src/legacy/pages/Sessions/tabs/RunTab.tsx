@@ -30,8 +30,9 @@ import { Header, Param, RunTabConfig, ValidUserInput } from '../../../model';
 interface RunTabProps {
   setCurrentTab?: (tab: number) => void;
 }
-
 const RunTab: React.FC<RunTabProps> = (props) => {
+  const user = useSelector((state: RootState) => state.user);
+
   // const navigate = useNavigate();
   const urlParams = useParams();
   const sessionId = urlParams.id || 'default session';
@@ -287,16 +288,29 @@ const RunTab: React.FC<RunTabProps> = (props) => {
           fullWidth
         />
         <Stack direction="row" spacing={2} sx={{ marginTop: 2 }} justifyContent="flex-start">
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => {
-              validateUserInput();
-              console.log('after clicking: ', validUserInput.valid);
-            }}
-          >
-            Run
-          </Button>
+          {user ? (
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => {
+                validateUserInput();
+                console.log('after clicking: ', validUserInput.valid);
+              }}
+            >
+              Save
+            </Button>
+          ) : (
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => {
+                validateUserInput();
+                console.log('after clicking: ', validUserInput.valid);
+              }}
+            >
+              Run
+            </Button>
+          )}
           {/* <Button
             variant="outlined"
             color="secondary"

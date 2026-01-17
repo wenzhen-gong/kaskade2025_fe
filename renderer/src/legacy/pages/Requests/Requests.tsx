@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { useLocation } from 'react-router-dom';
 import MethodDropdown from './MethodDropdown';
 import { Request } from '../../model';
+import RunTab from '../Sessions/tabs/RunTab';
 
 interface RequestsProps {
   // Add props if needed
@@ -36,7 +37,7 @@ const Requests: React.FC<RequestsProps> = () => {
   return (
     <RequestDiv>
       <p>Request</p>
-      {request && (
+      {/* {request && (
         <div>
           <p>Request Name: {requestName}</p>
           <label>Modified URL: </label>
@@ -44,9 +45,9 @@ const Requests: React.FC<RequestsProps> = () => {
           <p>Method: {method}</p>
           <MethodDropdown options={availableMethods} onSelect={handleMethodSelect} />
           <p>Headers: {JSON.stringify(headers)}</p>
-          {/* <p>Body: {JSON.stringify(body)}</p> */}
         </div>
-      )}
+      )} */}
+      <RunTab />
     </RequestDiv>
   );
 };
