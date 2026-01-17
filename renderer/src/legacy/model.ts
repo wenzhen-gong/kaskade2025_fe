@@ -1,9 +1,19 @@
+export interface RequestStats {
+  requestId: number;
+  requestName: string;
+  avgTimeMs: number;
+  success: number;
+  failures: number;
+  percentileTimeMs: Record<number, number>;
+}
+
 // Benchmark run result.
 export interface Result {
   avgTimeMs: number;
   success: number;
   failures: number;
   percentileTimeMs: Record<number, number>;
+  requestStats: RequestStats[];
 }
 
 // Result plus some metadata
