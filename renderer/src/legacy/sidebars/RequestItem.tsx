@@ -40,7 +40,7 @@ const RequestItem: React.FC<RequestItemProps> = (props) => {
   }
 
   // The basic styling of the HTTP method div.
-  let requestMethodStyle: React.CSSProperties = {
+  const requestMethodStyle: React.CSSProperties = {
     fontWeight: 'bold',
     width: '50px'
   };
@@ -53,7 +53,7 @@ const RequestItem: React.FC<RequestItemProps> = (props) => {
     PATCH: 'rgb(192, 168, 225)',
     DELETE: 'rgb(247, 154, 143)'
   };
-  let method = props.request.method;
+  const method = props.request.method;
   if (method in httpMethodToColor) {
     requestMethodStyle.color = httpMethodToColor[method];
   }
@@ -66,7 +66,7 @@ const RequestItem: React.FC<RequestItemProps> = (props) => {
       style={requestDivStyle}
       onClick={() => {
         navigate(`/sessions/${props.sessionId}/${props.requestId}`, {
-          state: { request: props.request }
+          state: props.request
         });
       }}
       onMouseOver={() => {

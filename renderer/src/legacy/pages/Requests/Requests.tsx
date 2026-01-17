@@ -8,13 +8,13 @@ interface RequestsProps {
   // Add props if needed
 }
 
-const Requests: React.FC<RequestsProps> = (props) => {
+const Requests: React.FC<RequestsProps> = () => {
   const location = useLocation();
-  const { state } = location;
-  const request = state && (state.request as Request);
-  const { requestName, url, method, headers, body } = request || {};
+  console.log('Requests location state: ', location.state);
+  const request = location.state as Request | null;
+  const { requestName, url, method, headers } = request || {};
 
-  const [currentTab, setCurrentTab] = useState<string>('overview');
+  // const [currentTab, setCurrentTab] = useState<string>('overview');
 
   const RequestDiv = styled.div`
     padding: 50px;
@@ -44,7 +44,7 @@ const Requests: React.FC<RequestsProps> = (props) => {
           <p>Method: {method}</p>
           <MethodDropdown options={availableMethods} onSelect={handleMethodSelect} />
           <p>Headers: {JSON.stringify(headers)}</p>
-          <p>Body: {JSON.stringify(body)}</p>
+          {/* <p>Body: {JSON.stringify(body)}</p> */}
         </div>
       )}
     </RequestDiv>

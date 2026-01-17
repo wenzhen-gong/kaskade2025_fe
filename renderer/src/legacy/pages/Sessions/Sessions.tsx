@@ -161,9 +161,9 @@ const Sessions: React.FC = () => {
           >
             {user && <Tab label="Overview" {...a11yProps(0)} />}
             {user && <Tab label="Authorization" {...a11yProps(1)} />}
-            <Tab label="Run" {...a11yProps(user ? 2 : 0)} />
-            <Tab label="Result" {...a11yProps(user ? 3 : 1)} />
-            <Tab label="History" {...a11yProps(user ? 4 : 2)} />
+            {!user && <Tab label="Run" {...a11yProps(user ? 2 : 0)} />}
+            {user && <Tab label="Result" {...a11yProps(user ? 3 : 1)} />}
+            {user && <Tab label="History" {...a11yProps(user ? 4 : 2)} />}
           </Tabs>
         </Box>
         <Box sx={{ flexGrow: 1, overflow: 'hidden' }}>
