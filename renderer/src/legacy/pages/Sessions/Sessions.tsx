@@ -139,24 +139,27 @@ const Sessions: React.FC = () => {
         sx={{
           display: 'flex',
           flexDirection: 'row',
-          alignItems: 'center',
+          alignItems: 'baseline',
+          justifyContent: 'space-between',
           marginBottom: '20px',
           paddingBottom: '20px',
           borderBottom: 1,
           borderColor: 'rgba(255, 255, 255, 0.2)'
         }}
       >
-        <Typography
-          variant="h6"
-          component="h6"
-          onClick={() => {
-            setCurrentTab(0);
-            navigate('/sessions/' + sessionId);
-          }}
-          sx={{ cursor: 'pointer' }}
-        >
-          {sessionName}
-        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
+          <Typography
+            variant="h6"
+            component="h6"
+            onClick={() => {
+              setCurrentTab(0);
+              navigate('/sessions/' + sessionId);
+            }}
+            sx={{ cursor: 'pointer' }}
+          >
+            {sessionName}
+          </Typography>
+        </Box>
       </Box>
       <Box
         sx={{

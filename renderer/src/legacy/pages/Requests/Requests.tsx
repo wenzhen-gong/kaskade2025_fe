@@ -19,13 +19,17 @@ import { RootState } from '../../redux/store';
 import { Header, Param } from '../../model';
 import { Request } from '../../model';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 
 interface RequestsProps {
   // Add props if needed
 }
 
 const RequestDiv = styled.div`
-  padding: 50px;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
 `;
 
 const Requests: React.FC<RequestsProps> = () => {
@@ -42,6 +46,16 @@ const Requests: React.FC<RequestsProps> = () => {
       if (session.sessionId === sessionId) {
         const found = session.requests.find((r) => r.requestId === requestId);
         return found || null;
+      }
+    }
+    return null;
+  });
+
+  const sessionName = useSelector((state: RootState) => {
+    if (sessionId === null) return null;
+    for (const session of state.datafile) {
+      if (session.sessionId === sessionId) {
+        return session.sessionName;
       }
     }
     return null;
@@ -167,12 +181,25 @@ const Requests: React.FC<RequestsProps> = () => {
     <RequestDiv>
       <Box
         sx={{
-          marginBottom: 2,
-          paddingBottom: 2,
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'baseline',
+          justifyContent: 'space-between',
+          marginBottom: '20px',
+          paddingBottom: '20px',
           borderBottom: 1,
           borderColor: 'rgba(255, 255, 255, 0.2)'
         }}
       >
+        <Box sx={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
+          <Typography variant="h6" component="h6">
+            {sessionName || 'Session'}
+          </Typography>
+          <ChevronRightIcon sx={{ fontSize: 18, color: 'rgba(255, 255, 255, 0.6)' }} />
+          <Typography variant="h6" component="h6">
+            {currentRequest.requestName}
+          </Typography>
+        </Box>
         <Button
           variant="outlined"
           onClick={() => {
@@ -180,7 +207,6 @@ const Requests: React.FC<RequestsProps> = () => {
               navigate(`/sessions/${sessionId}`);
             }
           }}
-          sx={{ marginLeft: '20px' }}
           startIcon={<ArrowBackIcon />}
         >
           Back to Session
