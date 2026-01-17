@@ -183,15 +183,16 @@ const Requests: React.FC<RequestsProps> = () => {
         sx={{
           display: 'flex',
           flexDirection: 'row',
-          alignItems: 'baseline',
+          alignItems: 'center',
           justifyContent: 'space-between',
+          height: '40px',
           marginBottom: '20px',
           paddingBottom: '20px',
           borderBottom: 1,
           borderColor: 'rgba(255, 255, 255, 0.2)'
         }}
       >
-        <Box sx={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Typography variant="h6" component="h6">
             {sessionName || 'Session'}
           </Typography>
@@ -202,11 +203,13 @@ const Requests: React.FC<RequestsProps> = () => {
         </Box>
         <Button
           variant="outlined"
+          size="small"
           onClick={() => {
             if (sessionId !== null) {
               navigate(`/sessions/${sessionId}`);
             }
           }}
+          sx={{ height: '32px', minHeight: '32px' }}
           startIcon={<ArrowBackIcon />}
         >
           Back to Session

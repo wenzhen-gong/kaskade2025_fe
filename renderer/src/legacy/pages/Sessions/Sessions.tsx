@@ -139,15 +139,16 @@ const Sessions: React.FC = () => {
         sx={{
           display: 'flex',
           flexDirection: 'row',
-          alignItems: 'baseline',
+          alignItems: 'center',
           justifyContent: 'space-between',
+          height: '40px',
           marginBottom: '20px',
           paddingBottom: '20px',
           borderBottom: 1,
           borderColor: 'rgba(255, 255, 255, 0.2)'
         }}
       >
-        <Box sx={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Typography
             variant="h6"
             component="h6"
