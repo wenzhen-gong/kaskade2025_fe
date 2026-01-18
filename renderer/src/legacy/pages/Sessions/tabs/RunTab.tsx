@@ -154,7 +154,7 @@ const RunTab: React.FC<RunTabProps> = () => {
         />
 
         <TextField
-          label="Total Requests"
+          label="Total Sessions"
           type="number"
           variant="outlined"
           value={runTabConfig.totalRequests || ''}
