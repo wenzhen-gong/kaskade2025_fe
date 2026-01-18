@@ -64,6 +64,8 @@ const App: React.FC = () => {
   };
 
   // Define react router rules.
+  // Note that request page is nested in session page, so session page component
+  // will not unmount when navigating to a request page.
   return (
     <>
       <Router>
@@ -72,17 +74,14 @@ const App: React.FC = () => {
 
           <Route path="/sessions" element={<Layout page="sessions" />}>
             <Route path="" element={<Sessions />} />
-            <Route path=":id" element={<Sessions />} />
-            <Route path=":id/:requestId" element={<Requests />} />
+            <Route path=":id" element={<Sessions />}>
+              <Route path=":requestId" element={<Requests />} />
+            </Route>
           </Route>
 
           <Route path="/history" element={<Layout page="history" />}>
             <Route path="" element={<History />} />
             <Route path=":id" element={<History />} />
-          </Route>
-
-          <Route path="/result" element={<Layout page="sessions" />}>
-            <Route path=":id/:runId" element={<Result />} />
           </Route>
         </Routes>
       </Router>

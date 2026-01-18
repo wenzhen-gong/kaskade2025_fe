@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Outlet } from 'react-router-dom';
 import OverviewTab from './tabs/OverviewTab';
 import RunTab from './tabs/RunTab';
 import AuthorizationTab from './tabs/AuthorizationTab';
@@ -93,22 +93,46 @@ const Sessions: React.FC = () => {
     setCurrentTab(newValue);
   };
 
-  // Get result from state to detect when test completes
-  const result = useSelector((state: RootState) => state.result);
-
+  // Track previous sessionId to detect actual session changes
+  const prevSessionIdRef = useRef<string | undefined>(sessionId);
   // Clear session-related state when session changes, and switch to Overview tab
   useEffect(() => {
-    dispatch(clearSessionState());
-    setCurrentTab(0); // Switch to Overview tab
+    // Only reset tab if sessionId actually changed (different session)
+    console.log('previous sessionId:', prevSessionIdRef.current, 'current sessionId:', sessionId);
+    if (prevSessionIdRef.current !== sessionId && sessionId) {
+      console.log('reset session page stage.');
+      // Clear state first to prevent RunTab from triggering runTest with old state
+      dispatch(clearSessionState());
+      // Switch to Overview tab only when changing to a different session
+      setCurrentTab(0);
+      prevSessionIdRef.current = sessionId;
+    } else if (sessionId && !prevSessionIdRef.current) {
+      // Initial mount - set ref but don't reset tab
+      prevSessionIdRef.current = sessionId;
+    }
   }, [sessionId, dispatch]);
 
   // Auto-switch to Result tab when test completes
+  // Get result from state to detect when test completes
+  const result = useSelector((state: RootState) => state.result);
   useEffect(() => {
     if (result) {
       setCurrentTab(3); // Switch to Result tab (index 3)
     }
   }, [result]);
 
+  // Check if the react router URL is on a request page (has requestId in params)
+  // If so, render the Outlet (whcih is the request page component).
+  const requestId = params.requestId;
+  if (requestId) {
+    return (
+      <SessionsDiv>
+        <Outlet />
+      </SessionsDiv>
+    );
+  }
+
+  // Otherwise, render the session page (session tabs)
   return (
     <SessionsDiv>
       <Box
@@ -116,23 +140,27 @@ const Sessions: React.FC = () => {
           display: 'flex',
           flexDirection: 'row',
           alignItems: 'center',
+          justifyContent: 'space-between',
+          height: '40px',
           marginBottom: '20px',
           paddingBottom: '20px',
           borderBottom: 1,
           borderColor: 'rgba(255, 255, 255, 0.2)'
         }}
       >
-        <Typography
-          variant="h6"
-          component="h6"
-          onClick={() => {
-            setCurrentTab(0);
-            navigate('/sessions/' + sessionId);
-          }}
-          sx={{ cursor: 'pointer' }}
-        >
-          {sessionName}
-        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <Typography
+            variant="h6"
+            component="h6"
+            onClick={() => {
+              setCurrentTab(0);
+              navigate('/sessions/' + sessionId);
+            }}
+            sx={{ cursor: 'pointer' }}
+          >
+            {sessionName}
+          </Typography>
+        </Box>
       </Box>
       <Box
         sx={{

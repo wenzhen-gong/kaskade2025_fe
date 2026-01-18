@@ -1,9 +1,19 @@
+export interface RequestStats {
+  requestId: number;
+  requestName: string;
+  avgTimeMs: number;
+  success: number;
+  failures: number;
+  percentileTimeMs: Record<number, number>;
+}
+
 // Benchmark run result.
 export interface Result {
   avgTimeMs: number;
   success: number;
   failures: number;
   percentileTimeMs: Record<number, number>;
+  requestStats: RequestStats[];
 }
 
 // Result plus some metadata
@@ -77,7 +87,10 @@ export interface Request {
   requestName: string;
   url: string;
   method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
-  headers?: Record<string, string>;
+  reqBody?: string;
+  headers?: Header[];
+  params?: Param[];
+  contentType?: string | null;
 }
 
 export interface Session {
@@ -94,9 +107,7 @@ export interface Session {
 
 // RunTab相关的类型定义
 export interface RunTabConfig {
-  URL?: string;
-  httpMethod?: string;
-  reqBody?: string;
+  serverUrl?: string;
   testDuration?: number;
   concurrencyNumber?: number;
   totalRequests?: number;
@@ -138,9 +149,6 @@ export interface State {
   datafile: Session[];
   configFile?: Session;
   runTabConfig: RunTabConfig;
-  headers: Header[];
-  params: Param[];
-  contentType: string | null;
   validUserInput: ValidUserInput;
   result?: Result;
   signupError: string | null;

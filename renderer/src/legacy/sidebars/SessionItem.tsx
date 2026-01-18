@@ -43,10 +43,10 @@ const SessionItem: React.FC<SessionItemProps> = (props) => {
 
   // Decide what is the currently "selected" session.
   const params = useParams();
-  const selectedSessionId = params.id;
+  const selectedSessionId = Number(params.id);
 
   const requests: React.ReactNode[] = [];
-  if (selectedSessionId == props.session.sessionId.toString()) {
+  if (selectedSessionId == props.session.sessionId) {
     // Selected.
     // 1. Highlight the session div if we don't select any request in it.
     if (!params.requestId) {
@@ -62,7 +62,7 @@ const SessionItem: React.FC<SessionItemProps> = (props) => {
           key={i}
           request={props.session.requests[i]}
           sessionId={props.session.sessionId}
-          requestId={i}
+          requestId={props.session.requests[i].requestId}
         />
       );
     }
@@ -76,13 +76,18 @@ const SessionItem: React.FC<SessionItemProps> = (props) => {
   const handleClose = (option: string): void => {
     console.log('option', option);
     if (option === 'Add Request') {
-      dispatch(addRequest(selectedSessionId));
+      dispatch(addRequest({ sessionId: selectedSessionId }));
     } else if (option === 'Duplicate Session') {
-      dispatch(duplicateSession(props.session));
+      dispatch(duplicateSession({ session: props.session }));
     } else if (option === 'Rename Session') {
-      dispatch(renameSession(props.session));
+      dispatch(
+        renameSession({
+          sessionId: selectedSessionId,
+          newName: 'new name'
+        })
+      );
     } else if (option === 'Delete Session') {
-      dispatch(deleteSession(selectedSessionId));
+      dispatch(deleteSession({ sessionId: selectedSessionId }));
     }
     setAnchorEl(null);
   };

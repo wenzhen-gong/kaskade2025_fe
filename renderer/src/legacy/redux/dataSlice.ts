@@ -4,9 +4,6 @@ import { Request, Session, State, Result, ResultMetadata } from '../model';
 const initialState: State = {
   datafile: [], // Initial state that'll be updated to action payload (datafile)
   runTabConfig: {},
-  headers: [],
-  params: [],
-  contentType: null,
   validUserInput: { valid: false, flag: false, error: null },
   result: undefined,
   // 这里开始是signup signin的model里面的state
@@ -29,26 +26,22 @@ const initialState: State = {
 
 export const runTest = createAsyncThunk('datafile/runTest', async (sessionId: string, thunkAPI) => {
   const state = thunkAPI.getState() as State;
-  // console.log('config in runTest Thunk: ', state.runTabConfig);
-  // console.log('contentType in runTest Thunk: ', state.contentType);
-  // console.log('headers in runTest Thunk: ', state.headers);
-  // console.log('params in runTest Thunk: ', state.params);
-  // let finalURL = state.runTabConfig.URL;
-  // state.params.forEach((param) => (finalURL += '?' + param.key + '=' + param.value + '&'));
+  const finalRunTabConfig = { ...state.runTabConfig };
 
-  const finalHeaders: Record<string, string> = {};
-  if (state.contentType) {
-    finalHeaders['Content-Type'] = state.contentType;
-  }
-  state.headers.forEach((header) => {
-    finalHeaders[header.key] = header.value;
-  });
-  // console.log('finalHeaders in runTest Thunk: ', finalHeaders);
-  const finalRunTabConfig = { ...state.runTabConfig, finalHeaders };
-  // finalRunTabConfig.URL = finalURL;
+  // Get all requests for the current session
+  const sessionIdNum = Number(sessionId);
+  const currentSession = state.datafile.find((session) => session.sessionId === sessionIdNum);
+  const requests = currentSession?.requests || [];
+
   console.log('finalRunTabConfig in runTest Thunk: ', finalRunTabConfig);
+  console.log('requests in runTest Thunk: ', requests);
 
-  const result: Result = await window.api.runLoadTest(finalRunTabConfig);
+  // TODO: set validUserInput to false to prevent duplicate triggering of runs.
+
+  const result: Result = await window.api.runLoadTest({
+    ...finalRunTabConfig,
+    requests: requests
+  });
 
   // Send a fetch request to backend to save result
   const saveResultRequest = {
@@ -90,27 +83,6 @@ const dataSlice = createSlice({
       state.runTabConfig = action.payload;
     },
 
-    resetRunTabConfig: (state) => {
-      state.runTabConfig = {};
-      state.headers = [];
-      state.params = [];
-      state.contentType = null;
-      state.validUserInput = { valid: false, flag: false, error: null };
-    },
-
-    setContentType: (state, action) => {
-      state.contentType = action.payload;
-    },
-
-    setHeaders: (state, action) => {
-      state.headers = action.payload;
-    },
-
-    setParams: (state, action) => {
-      state.params = action.payload;
-      console.log(state.params);
-    },
-
     setValidUserInput: (state, action) => {
       state.validUserInput = action.payload;
     },
@@ -145,7 +117,11 @@ const dataSlice = createSlice({
         requestId: requestId,
         requestName: 'New Request',
         method: 'GET',
-        url: ''
+        url: '',
+        reqBody: '',
+        headers: [],
+        params: [],
+        contentType: null
       };
       for (let i = 0; i < state.datafile.length; i++) {
         if (state.datafile[i].sessionId === sessionId) {
@@ -227,6 +203,29 @@ const dataSlice = createSlice({
       // call main process to write data file
       window.api.writeDataFile(JSON.stringify(state.datafile));
     },
+    updateRequest: (state, action) => {
+      const sessionId = action.payload.sessionId;
+      const requestId = action.payload.requestId;
+      const updates = action.payload.updates;
+      for (let i = 0; i < state.datafile.length; i++) {
+        if (state.datafile[i].sessionId === sessionId) {
+          for (let j = 0; j < state.datafile[i].requests.length; j++) {
+            if (state.datafile[i].requests[j].requestId === requestId) {
+              state.datafile[i].requests[j] = {
+                ...state.datafile[i].requests[j],
+                ...updates
+              };
+              state.datafile[i].lastModified = Date.now();
+              break;
+            }
+          }
+          break;
+        }
+      }
+
+      // call main process to write data file
+      window.api.writeDataFile(JSON.stringify(state.datafile));
+    },
     setSignupError: (state, action) => {
       state.signupError = action.payload;
     },
@@ -265,6 +264,7 @@ const dataSlice = createSlice({
     clearSessionState: (state) => {
       state.result = undefined;
       state.resultMetadata = undefined;
+      state.runTabConfig = {};
       state.validUserInput.valid = false;
       state.validUserInput.flag = !state.validUserInput.flag;
     }
@@ -282,10 +282,6 @@ const dataSlice = createSlice({
 export const {
   setData,
   setRunTabData,
-  resetRunTabConfig,
-  setContentType,
-  setHeaders,
-  setParams,
   setValidUserInput,
   currentSessionConfig,
   createSession,
@@ -295,6 +291,7 @@ export const {
   renameSession,
   updateSessionOverview,
   deleteRequest,
+  updateRequest,
   setSignupError,
   setOpenSignup,
   setSignupLoading,

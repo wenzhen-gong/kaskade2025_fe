@@ -75,13 +75,13 @@ const OverviewTab: React.FC<OverviewTabProps> = (props) => {
 
   // Get the session Id from URL parameters.
   const params = useParams();
-  const sessionId = params.id;
+  const sessionId = Number(params.id);
   // console.log("Session Id is : ", sessionId);
 
   // Get the state of this session.
   const overviewState = useSelector((state: RootState) => {
     for (let i = 0; i < state.datafile.length; i++) {
-      if (state.datafile[i].sessionId.toString() === sessionId) {
+      if (state.datafile[i].sessionId === sessionId) {
         return state.datafile[i];
       }
     }
@@ -99,6 +99,7 @@ const OverviewTab: React.FC<OverviewTabProps> = (props) => {
 
   // Render the page.
   const handleRenameSession = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    console.log("handle rename session.");
     dispatch(
       renameSession({
         sessionId: sessionId,
