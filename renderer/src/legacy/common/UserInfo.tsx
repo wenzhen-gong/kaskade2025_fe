@@ -118,7 +118,7 @@ const UserInfo: React.FC<User> = ({ username, email }) => {
 
     try {
       const response = await fetch(
-        `https://kaskade-backend-483052428154.asia-east1.run.app/${user?.username}`,
+        `https://kaskade-backend-483052428154.asia-east1.run.app/users/${user?.username}`,
         {
           method: 'PUT',
           headers: {
