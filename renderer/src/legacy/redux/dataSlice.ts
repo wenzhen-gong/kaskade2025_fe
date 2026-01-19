@@ -51,10 +51,13 @@ export const runTest = createAsyncThunk('datafile/runTest', async (sessionId: st
     config: finalRunTabConfig,
     result: result
   };
-  const saveResultResponse = await fetch('http://localhost:8080/benchmarkresult', {
-    method: 'POST',
-    body: JSON.stringify(saveResultRequest)
-  }).then((res) => res.json());
+  const saveResultResponse = await fetch(
+    'https://kaskade-backend-483052428154.asia-east1.run.app/benchmarkresult',
+    {
+      method: 'POST',
+      body: JSON.stringify(saveResultRequest)
+    }
+  ).then((res) => res.json());
   console.log(`saveResultResponse: ${saveResultResponse}`);
   const resultMetadata: ResultMetadata = {
     id: saveResultResponse.id,

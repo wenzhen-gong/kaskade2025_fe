@@ -90,13 +90,16 @@ const UserInfo: React.FC<User> = ({ username, email }) => {
 
   const handleLogOut = async (): Promise<void> => {
     try {
-      const response = await fetch('http://localhost:8080/logout', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        credentials: 'include'
-      });
+      const response = await fetch(
+        'https://kaskade-backend-483052428154.asia-east1.run.app/logout',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include'
+        }
+      );
 
       const result = await response.json();
 
@@ -114,14 +117,17 @@ const UserInfo: React.FC<User> = ({ username, email }) => {
     setSubmitLoading(true);
 
     try {
-      const response = await fetch(`http://localhost:8080/users/${user?.username}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(profileForm),
-        credentials: 'include'
-      });
+      const response = await fetch(
+        `https://kaskade-backend-483052428154.asia-east1.run.app/${user?.username}`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(profileForm),
+          credentials: 'include'
+        }
+      );
 
       const result = await response.json();
 
