@@ -102,7 +102,7 @@ const HistoryTab: React.FC<HistoryTabProps> = ({ setCurrentTab, currentTab }) =>
     try {
       const limit = 20; // Show last 20 results
       const response = await fetch(
-        `http://localhost:8080/benchmarkresult?userId=${user.id}&sessionId=${sessionId}&limit=${limit}`
+        `https://kaskade-backend-483052428154.asia-east1.run.app/benchmarkresult?userId=${user.id}&sessionId=${sessionId}&limit=${limit}`
       );
 
       if (!response.ok) {
@@ -133,7 +133,7 @@ const HistoryTab: React.FC<HistoryTabProps> = ({ setCurrentTab, currentTab }) =>
 
   const handleRowClick = async (resultId: number): Promise<void> => {
     try {
-      const response = await fetch(`http://localhost:8080/benchmarkresult/${resultId}`);
+      const response = await fetch(`https://kaskade-backend-483052428154.asia-east1.run.app/benchmarkresult/${resultId}`);
       if (!response.ok) {
         throw new Error('Failed to fetch benchmark result details');
       }
