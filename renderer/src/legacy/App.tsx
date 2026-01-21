@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
-import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import styled from 'styled-components';
 import HeadBar from './common/HeadBar';
 import NavBar from './common/NavBar';
@@ -8,9 +8,6 @@ import SideBar from './sidebars/SideBar';
 import History from './pages/History/History';
 import Sessions from './pages/Sessions/Sessions';
 import Requests from './pages/Requests/Requests';
-import Result from './pages/Result/Result';
-import { useSelector } from 'react-redux';
-import { State } from './model';
 
 const PageContainer = styled.div`
   background-color: #000000;
@@ -35,14 +32,6 @@ interface LayoutProps {
 }
 
 const App: React.FC = () => {
-  // Find the first session in data file, so we can redirect the initial page to the first session.
-  const firstSessionId = useSelector((state: State) => {
-    if (state.datafile.length > 0) {
-      return state.datafile[0].sessionId;
-    }
-    return null;
-  });
-
   // The overall page layout.
   const Layout: React.FC<LayoutProps> = (props) => {
     //没有地址栏，但是可以用useLocation追踪当前url

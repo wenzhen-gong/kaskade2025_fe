@@ -7,15 +7,63 @@ import fs from 'fs';
 let mainWindow: BrowserWindow;
 
 app.whenReady().then(() => {
+  const isDev = !app.isPackaged;
+
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
-      preload: path.join(__dirname, '../preload/index.js')
+      preload: path.join(__dirname, '../preload/index.js'),
+      nodeIntegration: false,
+      contextIsolation: true
     }
   });
 
-  mainWindow.loadURL('http://localhost:5173');
+  if (isDev) {
+    // 开发模式
+    mainWindow.loadURL('http://localhost:5173');
+    mainWindow.webContents.openDevTools();
+  } else {
+    // 生产模式：electron-builder 会将 out 目录打包到 resources/app.asar 中
+    // __dirname 在生产模式下指向 resources/app.asar/out/main/
+    const htmlPath = path.join(__dirname, '../renderer/index.html');
+    console.log('Loading HTML from:', htmlPath);
+    console.log('App path:', app.getAppPath());
+    console.log('__dirname:', __dirname);
+
+    // 临时打开开发者工具以便调试黑屏问题
+    mainWindow.webContents.openDevTools();
+
+    // 监听页面加载事件
+    mainWindow.webContents.on('did-fail-load', (event, errorCode, errorDescription, validatedURL) => {
+      console.error('Page failed to load:', errorCode, errorDescription, validatedURL);
+    });
+
+    mainWindow.webContents.on('did-finish-load', () => {
+      console.log('Page finished loading');
+      // 检查是否有 JavaScript 错误
+      mainWindow.webContents.executeJavaScript(`
+        console.log('Page loaded, checking for errors...');
+        if (typeof window !== 'undefined') {
+          console.log('Window object exists');
+          if (document.getElementById('root')) {
+            console.log('Root element exists');
+          } else {
+            console.error('Root element NOT found!');
+          }
+        }
+      `).catch((err) => console.error('Error executing JavaScript:', err));
+    });
+
+    mainWindow.webContents.on('console-message', (event, level, message) => {
+      console.log(`[Renderer ${level}]:`, message);
+    });
+
+    mainWindow.loadFile(htmlPath).catch((err) => {
+      console.error('Failed to load HTML file:', err);
+      console.error('Attempted path:', htmlPath);
+    });
+  }
 });
 
 ipcMain.handle('run-load-test', async (_event, config) => {

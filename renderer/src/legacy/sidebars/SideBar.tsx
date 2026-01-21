@@ -2,7 +2,6 @@ import React from 'react';
 import styled from 'styled-components';
 import SessionsSide from './SessionsSide';
 import HistorySide from './HistorySide';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 
 const SideBarDiv = styled.div`
   background-color: #2a2828;

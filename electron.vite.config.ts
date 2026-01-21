@@ -24,9 +24,7 @@ export default defineConfig({
     root: './renderer',
     build: {
       rollupOptions: {
-        input: {
-          index: resolve(__dirname, 'renderer/index.html')
-        }
+        input: resolve(__dirname, 'renderer/index.html')
       }
     }
   }
