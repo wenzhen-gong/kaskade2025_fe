@@ -32,8 +32,11 @@
       "out/**/*",
       "electron/**/*",
       "node_modules/**/*",
-      "package.json",
-      "datafile.json"
+      "package.json"
+    ],
+
+    "asarUnpack": [
+      "out/loadtester"
     ],
 
     "directories": {
