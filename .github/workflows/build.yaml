@@ -7,6 +7,8 @@ on:
 
 jobs:
   build:
+    permissions:
+      contents: read
     strategy:
       matrix:
         include:
@@ -35,13 +37,19 @@ jobs:
       - name: Cache node modules
         uses: actions/cache@v4
         with:
-          path: ~/.npm
+          path: node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
+        continue-on-error: true
 
       - name: Install dependencies
-        run: npm install
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
 
       - name: Build Go binary (loadtester)
         shell: bash
@@ -57,9 +65,27 @@ jobs:
         run: npm run build
 
       - name: Build distributable
-        run: npx electron-builder --${{ matrix.platform }}
+        shell: bash
+        run: |
+          echo "Building for platform: ${{ matrix.platform }}"
+          echo "OS: ${{ runner.os }}"
+          ls -la out/ || echo "out directory check"
+          if [ "${{ matrix.platform }}" == "linux" ]; then
+            npx electron-builder --linux --publish never
+          elif [ "${{ matrix.platform }}" == "win" ]; then
+            npx electron-builder --win --publish never
+          elif [ "${{ matrix.platform }}" == "mac" ]; then
+            npx electron-builder --mac --publish never
+          fi
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+          ELECTRON_BUILDER_CACHE: ${{ runner.temp }}/electron-builder-cache
+
+      - name: List build artifacts
+        shell: bash
+        run: |
+          echo "Build artifacts:"
+          ls -lah dist/ || echo "dist directory not found"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
