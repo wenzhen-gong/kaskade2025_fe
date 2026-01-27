@@ -1,0 +1,101 @@
+name: Build Electron App
+
+on:
+  push:
+    tags:
+      - v*
+
+jobs:
+  build:
+    permissions:
+      contents: read
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            platform: linux
+          - os: windows-latest
+            platform: win
+          - os: macos-latest
+            platform: mac
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.21'
+
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+        continue-on-error: true
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
+
+      - name: Build Go binary (loadtester)
+        shell: bash
+        run: |
+          mkdir -p out
+          if [ "${{ runner.os }}" == "Windows" ]; then
+            go build -o out/loadtester.exe scripts/loadtester.go
+          else
+            go build -o out/loadtester scripts/loadtester.go
+          fi
+
+      - name: Build Electron app
+        shell: bash
+        run: npm run build
+
+      - name: Build distributable
+        shell: bash
+        run: |
+          echo "Building for platform: ${{ matrix.platform }}"
+          echo "OS: ${{ runner.os }}"
+          ls -la out/ || echo "out directory check"
+          if [ "${{ matrix.platform }}" == "linux" ]; then
+            npx electron-builder --linux --publish never
+          elif [ "${{ matrix.platform }}" == "win" ]; then
+            npx electron-builder --win --publish never
+          elif [ "${{ matrix.platform }}" == "mac" ]; then
+            npx electron-builder --mac --publish never
+          fi
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+          ELECTRON_BUILDER_CACHE: ${{ runner.temp }}/electron-builder-cache
+
+      - name: List build artifacts
+        shell: bash
+        run: |
+          echo "Build artifacts:"
+          ls -lah dist/ || echo "dist directory not found"
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.platform }}-build
+          path: |
+            dist/*.exe
+            dist/*.dmg
+            dist/*.AppImage
+            dist/*.deb
+          if-no-files-found: ignore
