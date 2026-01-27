@@ -44,6 +44,7 @@ jobs:
         continue-on-error: true
 
       - name: Install dependencies
+        shell: bash
         run: |
           if [ -f package-lock.json ]; then
             npm ci
@@ -62,6 +63,7 @@ jobs:
           fi
 
       - name: Build Electron app
+        shell: bash
         run: npm run build
 
       - name: Build distributable
