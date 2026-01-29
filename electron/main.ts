@@ -105,9 +105,17 @@ ipcMain.handle('run-load-test', async (_event, config) => {
   }
   return new Promise((resolve, reject) => {
     const loadtesterPath = getLoadtesterPath();
-    if (!app.isPackaged) {
-      console.log('Spawning loadtester from:', loadtesterPath);
+    // 检查文件是否存在
+    if (!fs.existsSync(loadtesterPath)) {
+      const errorMsg = `Loadtester binary not found at: ${loadtesterPath}`;
+      console.error(errorMsg);
+      console.error('Resources path:', process.resourcesPath);
+      console.error('App path:', app.getAppPath());
+      console.error('__dirname:', __dirname);
+      reject(new Error(errorMsg));
+      return;
     }
+    console.log('Spawning loadtester from:', loadtesterPath);
     const child = spawn(loadtesterPath);
     child.stdin.write(JSON.stringify(config));
     child.stdin.end();
